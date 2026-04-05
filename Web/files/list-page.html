@@ -1,0 +1,1272 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VOID — Next-Gen Hardware</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --black: #080808;
+    --white: #f0ede8;
+    --accent: #c8ff00;
+    --gray: #1a1a1a;
+    --mid: #888;
+    --border: rgba(240,237,232,0.08);
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--black);
+    color: var(--white);
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 300;
+    overflow-x: hidden;
+    cursor: none;
+  }
+
+  /* ── CUSTOM CURSOR ── */
+  .cursor {
+    width: 10px; height: 10px;
+    background: var(--accent);
+    border-radius: 50%;
+    position: fixed;
+    top: 0; left: 0;
+    pointer-events: none;
+    z-index: 9999;
+    transform: translate(-50%,-50%);
+    transition: transform 0.08s ease, width 0.2s ease, height 0.2s ease, background 0.2s ease;
+  }
+  .cursor-ring {
+    width: 36px; height: 36px;
+    border: 1px solid rgba(200,255,0,0.4);
+    border-radius: 50%;
+    position: fixed;
+    top: 0; left: 0;
+    pointer-events: none;
+    z-index: 9998;
+    transform: translate(-50%,-50%);
+    transition: transform 0.18s ease, width 0.25s ease, height 0.25s ease;
+  }
+  body:has(a:hover) .cursor, body:has(button:hover) .cursor { width: 18px; height: 18px; }
+  body:has(a:hover) .cursor-ring, body:has(button:hover) .cursor-ring { width: 56px; height: 56px; border-color: var(--accent); }
+
+  /* ── NAV ── */
+  nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 48px;
+    height: 72px;
+    background: rgba(8,8,8,0.85);
+    backdrop-filter: blur(20px);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .nav-logo {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 28px;
+    letter-spacing: 0.18em;
+    color: var(--white);
+    text-decoration: none;
+  }
+  .nav-logo span { color: var(--accent); }
+
+  .nav-links {
+    display: flex;
+    gap: 40px;
+    list-style: none;
+  }
+  .nav-links a {
+    font-size: 11px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--mid);
+    text-decoration: none;
+    transition: color 0.2s;
+  }
+  .nav-links a:hover { color: var(--white); }
+
+  .nav-right {
+    display: flex;
+    align-items: center;
+    gap: 28px;
+  }
+  .nav-icon {
+    width: 20px; height: 20px;
+    cursor: none;
+    color: var(--mid);
+    transition: color 0.2s;
+  }
+  .nav-icon:hover { color: var(--white); }
+  .cart-count {
+    font-size: 10px;
+    background: var(--accent);
+    color: var(--black);
+    border-radius: 50%;
+    width: 16px; height: 16px;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 500;
+    margin-left: -8px;
+    margin-top: -12px;
+  }
+
+  /* ── HERO ── */
+  .hero {
+    min-height: 100vh;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    padding-top: 72px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .hero-text-col {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 80px 48px 80px 48px;
+    position: relative;
+    z-index: 2;
+  }
+
+  .hero-eyebrow {
+    font-size: 10px;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 32px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .hero-eyebrow::before {
+    content: '';
+    display: block;
+    width: 32px; height: 1px;
+    background: var(--accent);
+  }
+
+  .hero-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(80px, 10vw, 148px);
+    line-height: 0.92;
+    letter-spacing: 0.02em;
+    margin-bottom: 40px;
+  }
+  .hero-title .line2 { color: var(--accent); }
+
+  .hero-sub {
+    font-size: 14px;
+    line-height: 1.8;
+    color: var(--mid);
+    max-width: 340px;
+    margin-bottom: 56px;
+  }
+
+  .hero-cta {
+    display: flex;
+    gap: 20px;
+    align-items: center;
+  }
+
+  .btn-primary {
+    font-size: 11px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    background: var(--accent);
+    color: var(--black);
+    border: none;
+    padding: 16px 36px;
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 500;
+    cursor: none;
+    position: relative;
+    overflow: hidden;
+    transition: all 0.3s;
+    text-decoration: none;
+  }
+  .btn-primary::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: var(--white);
+    transform: scaleX(0);
+    transform-origin: right;
+    transition: transform 0.3s ease;
+  }
+  .btn-primary:hover::after { transform: scaleX(1); transform-origin: left; }
+  .btn-primary span { position: relative; z-index: 1; }
+
+  .btn-ghost {
+    font-size: 11px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    background: transparent;
+    color: var(--white);
+    border: 1px solid var(--border);
+    padding: 16px 36px;
+    font-family: 'DM Sans', sans-serif;
+    cursor: none;
+    transition: all 0.3s;
+    text-decoration: none;
+  }
+  .btn-ghost:hover { border-color: var(--white); }
+
+  .hero-image-col {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+  }
+
+  .hero-bg-num {
+    position: absolute;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 420px;
+    color: rgba(240,237,232,0.025);
+    line-height: 1;
+    right: -30px;
+    bottom: -40px;
+    user-select: none;
+    pointer-events: none;
+  }
+
+  .hero-product-img {
+    width: 78%;
+    max-width: 560px;
+    position: relative;
+    z-index: 2;
+    animation: float 5s ease-in-out infinite;
+    filter: drop-shadow(0 40px 80px rgba(200,255,0,0.15));
+  }
+
+  @keyframes float {
+    0%, 100% { transform: translateY(0px) rotate(-1deg); }
+    50% { transform: translateY(-18px) rotate(1deg); }
+  }
+
+  .hero-product-label {
+    position: absolute;
+    bottom: 80px;
+    left: 40px;
+    z-index: 3;
+  }
+  .hero-product-label .pname {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 13px;
+    letter-spacing: 0.18em;
+    color: var(--mid);
+  }
+  .hero-product-label .pprice {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 32px;
+    letter-spacing: 0.05em;
+    color: var(--accent);
+  }
+
+  /* scroll indicator */
+  .scroll-hint {
+    position: absolute;
+    bottom: 40px;
+    left: 48px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--mid);
+    z-index: 5;
+  }
+  .scroll-line {
+    width: 48px; height: 1px;
+    background: var(--mid);
+    position: relative;
+    overflow: hidden;
+  }
+  .scroll-line::after {
+    content: '';
+    position: absolute;
+    top: 0; left: -100%;
+    width: 100%; height: 100%;
+    background: var(--accent);
+    animation: scan 2s ease-in-out infinite;
+  }
+  @keyframes scan { 0% { left: -100%; } 100% { left: 100%; } }
+
+  /* ── MARQUEE ── */
+  .marquee-wrap {
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+    overflow: hidden;
+    padding: 18px 0;
+    background: var(--gray);
+  }
+  .marquee-track {
+    display: flex;
+    gap: 0;
+    animation: marquee 20s linear infinite;
+    white-space: nowrap;
+  }
+  .marquee-item {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 14px;
+    letter-spacing: 0.2em;
+    color: var(--mid);
+    padding: 0 48px;
+    display: flex;
+    align-items: center;
+    gap: 48px;
+  }
+  .marquee-item .dot {
+    width: 4px; height: 4px;
+    background: var(--accent);
+    border-radius: 50%;
+    display: inline-block;
+  }
+  @keyframes marquee {
+    0% { transform: translateX(0); }
+    100% { transform: translateX(-50%); }
+  }
+
+  /* ── SECTION HEADER ── */
+  .section-header {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    padding: 0 48px;
+    margin-bottom: 48px;
+  }
+  .section-label {
+    font-size: 10px;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 12px;
+  }
+  .section-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 56px;
+    letter-spacing: 0.04em;
+    line-height: 1;
+  }
+  .section-link {
+    font-size: 11px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--mid);
+    text-decoration: none;
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 4px;
+    transition: color 0.2s, border-color 0.2s;
+  }
+  .section-link:hover { color: var(--accent); border-color: var(--accent); }
+
+  /* ── CATEGORIES ── */
+  .categories {
+    padding: 100px 0;
+  }
+
+  .cat-grid {
+    display: grid;
+    grid-template-columns: 1.4fr 1fr 1fr;
+    gap: 2px;
+    padding: 0 48px;
+  }
+
+  .cat-card {
+    position: relative;
+    overflow: hidden;
+    aspect-ratio: 3/4;
+    cursor: none;
+    background: var(--gray);
+  }
+  .cat-card:first-child { aspect-ratio: 3/5; }
+
+  .cat-card-bg {
+    position: absolute;
+    inset: 0;
+    transition: transform 0.7s ease;
+  }
+  .cat-card:hover .cat-card-bg { transform: scale(1.05); }
+
+  /* SVG illustration bg per category */
+  .cat-consoles .cat-card-bg { background: radial-gradient(ellipse at 60% 40%, rgba(200,255,0,0.12) 0%, transparent 70%), linear-gradient(160deg, #111 0%, #0d0d0d 100%); }
+  .cat-phones .cat-card-bg   { background: radial-gradient(ellipse at 40% 60%, rgba(200,255,0,0.08) 0%, transparent 70%), linear-gradient(160deg, #0f0f0f 0%, #111 100%); }
+  .cat-prebuilts .cat-card-bg{ background: radial-gradient(ellipse at 50% 30%, rgba(200,255,0,0.1) 0%, transparent 70%), linear-gradient(160deg, #0d0d0d 0%, #0f0f0f 100%); }
+
+  .cat-icon {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -58%);
+    width: 55%;
+    opacity: 0.7;
+    transition: opacity 0.4s, transform 0.4s;
+  }
+  .cat-card:hover .cat-icon { opacity: 1; transform: translate(-50%, -62%); }
+
+  .cat-info {
+    position: absolute;
+    bottom: 0;
+    left: 0; right: 0;
+    padding: 32px 28px;
+    background: linear-gradient(to top, rgba(8,8,8,0.95) 0%, transparent 100%);
+    transition: padding 0.3s;
+  }
+  .cat-card:hover .cat-info { padding-bottom: 40px; }
+
+  .cat-name {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 32px;
+    letter-spacing: 0.06em;
+    line-height: 1;
+    margin-bottom: 8px;
+  }
+  .cat-count {
+    font-size: 11px;
+    letter-spacing: 0.15em;
+    color: var(--mid);
+    text-transform: uppercase;
+  }
+  .cat-arrow {
+    position: absolute;
+    right: 28px; bottom: 32px;
+    width: 36px; height: 36px;
+    border: 1px solid var(--border);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--white);
+    transition: background 0.3s, border-color 0.3s, transform 0.3s;
+  }
+  .cat-card:hover .cat-arrow {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: var(--black);
+    transform: rotate(45deg);
+  }
+
+  /* ── PRODUCTS ── */
+  .products {
+    padding: 100px 0;
+    border-top: 1px solid var(--border);
+  }
+
+  /* filter tabs */
+  .filter-tabs {
+    display: flex;
+    gap: 4px;
+    padding: 0 48px;
+    margin-bottom: 56px;
+  }
+  .filter-tab {
+    font-size: 11px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    padding: 10px 22px;
+    border: 1px solid var(--border);
+    background: transparent;
+    color: var(--mid);
+    font-family: 'DM Sans', sans-serif;
+    cursor: none;
+    transition: all 0.2s;
+  }
+  .filter-tab.active, .filter-tab:hover {
+    background: var(--accent);
+    color: var(--black);
+    border-color: var(--accent);
+  }
+
+  .product-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 2px;
+    padding: 0 48px;
+  }
+
+  .product-card {
+    position: relative;
+    background: var(--gray);
+    cursor: none;
+    group: true;
+    overflow: hidden;
+  }
+
+  .product-card-img {
+    aspect-ratio: 1/1;
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .product-card-img svg {
+    width: 62%;
+    transition: transform 0.5s ease;
+  }
+  .product-card:hover .product-card-img svg { transform: scale(1.08) translateY(-4%); }
+
+  .product-card-img::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse at center, rgba(200,255,0,0.08) 0%, transparent 70%);
+    opacity: 0;
+    transition: opacity 0.4s;
+  }
+  .product-card:hover .product-card-img::after { opacity: 1; }
+
+  .product-tag {
+    position: absolute;
+    top: 16px; left: 16px;
+    font-size: 9px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    padding: 5px 10px;
+    background: var(--accent);
+    color: var(--black);
+    font-weight: 500;
+  }
+
+  .product-info {
+    padding: 20px 20px 24px;
+    border-top: 1px solid var(--border);
+  }
+  .product-cat {
+    font-size: 9px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--mid);
+    margin-bottom: 6px;
+  }
+  .product-name {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 22px;
+    letter-spacing: 0.06em;
+    line-height: 1.1;
+    margin-bottom: 4px;
+  }
+  .product-sub {
+    font-size: 12px;
+    color: var(--mid);
+    margin-bottom: 16px;
+  }
+  .product-bottom {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .product-price {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 28px;
+    letter-spacing: 0.04em;
+  }
+  .product-price .orig {
+    font-size: 14px;
+    color: var(--mid);
+    text-decoration: line-through;
+    margin-left: 8px;
+  }
+  .add-btn {
+    width: 36px; height: 36px;
+    border: 1px solid var(--border);
+    background: transparent;
+    color: var(--white);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: none;
+    transition: all 0.2s;
+    font-size: 18px;
+    line-height: 1;
+  }
+  .add-btn:hover { background: var(--accent); border-color: var(--accent); color: var(--black); }
+
+  /* ── FEATURE STRIP ── */
+  .feature-strip {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+  }
+  .feature-item {
+    padding: 48px 40px;
+    border-right: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  .feature-item:last-child { border-right: none; }
+  .feature-icon {
+    width: 28px; height: 28px;
+    color: var(--accent);
+    margin-bottom: 4px;
+  }
+  .feature-label {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 18px;
+    letter-spacing: 0.08em;
+  }
+  .feature-desc {
+    font-size: 12px;
+    color: var(--mid);
+    line-height: 1.7;
+  }
+
+  /* ── BANNER ── */
+  .banner {
+    margin: 2px 48px;
+    background: var(--gray);
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    overflow: hidden;
+    position: relative;
+  }
+  .banner-text {
+    padding: 80px 64px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+  .banner-eyebrow {
+    font-size: 10px;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 20px;
+  }
+  .banner-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 72px;
+    line-height: 0.95;
+    margin-bottom: 24px;
+  }
+  .banner-body {
+    font-size: 13px;
+    color: var(--mid);
+    line-height: 1.8;
+    max-width: 340px;
+    margin-bottom: 40px;
+  }
+  .banner-img-col {
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: radial-gradient(ellipse at 50% 50%, rgba(200,255,0,0.08) 0%, transparent 70%);
+  }
+  .banner-img-col svg {
+    width: 72%;
+    filter: drop-shadow(0 20px 60px rgba(200,255,0,0.2));
+    animation: float 6s ease-in-out infinite reverse;
+  }
+  .banner-num {
+    position: absolute;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 280px;
+    color: rgba(200,255,0,0.04);
+    right: -20px;
+    bottom: -20px;
+    line-height: 1;
+    user-select: none;
+  }
+
+  /* ── FOOTER ── */
+  footer {
+    padding: 80px 48px 40px;
+    border-top: 1px solid var(--border);
+  }
+  .footer-top {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr 1fr;
+    gap: 64px;
+    margin-bottom: 72px;
+  }
+  .footer-brand .logo {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 40px;
+    letter-spacing: 0.15em;
+    margin-bottom: 20px;
+    display: block;
+    color: var(--white);
+    text-decoration: none;
+  }
+  .footer-brand .logo span { color: var(--accent); }
+  .footer-brand p {
+    font-size: 13px;
+    color: var(--mid);
+    line-height: 1.8;
+    max-width: 280px;
+    margin-bottom: 32px;
+  }
+  .social-links { display: flex; gap: 12px; }
+  .social-link {
+    width: 36px; height: 36px;
+    border: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: center;
+    color: var(--mid);
+    text-decoration: none;
+    font-size: 12px;
+    transition: all 0.2s;
+  }
+  .social-link:hover { border-color: var(--accent); color: var(--accent); }
+  .footer-col h4 {
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--white);
+    margin-bottom: 24px;
+  }
+  .footer-col ul { list-style: none; display: flex; flex-direction: column; gap: 12px; }
+  .footer-col ul a {
+    font-size: 13px;
+    color: var(--mid);
+    text-decoration: none;
+    transition: color 0.2s;
+  }
+  .footer-col ul a:hover { color: var(--white); }
+
+  .footer-bottom {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-top: 32px;
+    border-top: 1px solid var(--border);
+  }
+  .footer-bottom p {
+    font-size: 11px;
+    color: var(--mid);
+    letter-spacing: 0.1em;
+  }
+
+  /* ── ANIMATIONS ── */
+  .fade-up {
+    opacity: 0;
+    transform: translateY(30px);
+    transition: opacity 0.7s ease, transform 0.7s ease;
+  }
+  .fade-up.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  /* stagger children */
+  .stagger > * { opacity: 0; transform: translateY(24px); transition: opacity 0.6s ease, transform 0.6s ease; }
+  .stagger.visible > *:nth-child(1) { opacity: 1; transform: none; transition-delay: 0s; }
+  .stagger.visible > *:nth-child(2) { opacity: 1; transform: none; transition-delay: 0.1s; }
+  .stagger.visible > *:nth-child(3) { opacity: 1; transform: none; transition-delay: 0.2s; }
+  .stagger.visible > *:nth-child(4) { opacity: 1; transform: none; transition-delay: 0.3s; }
+</style>
+</head>
+<body>
+
+<div class="cursor" id="cursor"></div>
+<div class="cursor-ring" id="cursorRing"></div>
+
+<!-- NAV -->
+<nav>
+  <a href="index.html" class="nav-logo">VOI<span>D</span></a>
+  <ul class="nav-links">
+    <li><a href="#">Consoles</a></li>
+    <li><a href="#">Phones</a></li>
+    <li><a href="#">Pre-Builts</a></li>
+    <li><a href="#">Accessories</a></li>
+    <li><a href="#">Studio</a></li>
+  </ul>
+  <div class="nav-right">
+    <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+    <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M20 7H4a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2z"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/></svg>
+    <div style="display:flex;align-items:flex-start">
+      <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+      <div class="cart-count">3</div>
+    </div>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-text-col">
+    <div class="hero-eyebrow">New Season Drop — 2025</div>
+    <h1 class="hero-title">
+      ENTER<br>
+      <span class="line2">THE</span><br>
+      VOID
+    </h1>
+    <p class="hero-sub">Hardware built for those who refuse to be limited. Every device engineered at the edge of possibility.</p>
+    <div class="hero-cta">
+      <a href="product.html" class="btn-primary"><span>Shop Now</span></a>
+      <a href="#" class="btn-ghost">View All</a>
+    </div>
+    <div class="scroll-hint">
+      <span class="scroll-line"></span>
+      Scroll to explore
+    </div>
+  </div>
+  <div class="hero-image-col">
+    <div class="hero-bg-num">V</div>
+    <!-- Console SVG illustration -->
+    <svg class="hero-product-img" viewBox="0 0 500 400" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <!-- Console body -->
+      <rect x="80" y="140" width="340" height="200" rx="32" fill="#111" stroke="#222" stroke-width="1"/>
+      <rect x="80" y="140" width="340" height="200" rx="32" fill="url(#consoleGrad)"/>
+      <!-- Left grip -->
+      <rect x="60" y="220" width="60" height="100" rx="20" fill="#0e0e0e" stroke="#1a1a1a"/>
+      <!-- Right grip -->
+      <rect x="380" y="220" width="60" height="100" rx="20" fill="#0e0e0e" stroke="#1a1a1a"/>
+      <!-- Screen area -->
+      <rect x="160" y="165" width="180" height="130" rx="8" fill="#0a0a0a" stroke="#1e1e1e"/>
+      <rect x="162" y="167" width="176" height="126" rx="7" fill="url(#screenGrad)"/>
+      <!-- Screen glow content -->
+      <text x="250" y="235" font-family="monospace" font-size="28" fill="#c8ff00" text-anchor="middle" opacity="0.9">VOID</text>
+      <text x="250" y="255" font-family="monospace" font-size="10" fill="#666" text-anchor="middle">SYSTEM ONLINE</text>
+      <!-- D-pad -->
+      <rect x="108" y="190" width="10" height="28" rx="3" fill="#1e1e1e"/>
+      <rect x="100" y="198" width="26" height="12" rx="3" fill="#1e1e1e"/>
+      <!-- Buttons -->
+      <circle cx="395" cy="195" r="8" fill="#1a1a1a" stroke="#c8ff00" stroke-width="1"/>
+      <circle cx="413" cy="205" r="8" fill="#1a1a1a" stroke="#c8ff00" stroke-width="0.5"/>
+      <circle cx="377" cy="205" r="8" fill="#1a1a1a" stroke="#c8ff00" stroke-width="0.5"/>
+      <circle cx="395" cy="215" r="8" fill="#1a1a1a" stroke="#c8ff00" stroke-width="0.5"/>
+      <!-- Center button -->
+      <circle cx="250" cy="314" r="12" fill="#0e0e0e" stroke="#c8ff00" stroke-width="1"/>
+      <circle cx="250" cy="314" r="5" fill="#c8ff00" opacity="0.5"/>
+      <!-- Thumb sticks -->
+      <circle cx="145" cy="280" r="18" fill="#0e0e0e" stroke="#222"/>
+      <circle cx="145" cy="280" r="9" fill="#151515"/>
+      <circle cx="355" cy="280" r="18" fill="#0e0e0e" stroke="#222"/>
+      <circle cx="355" cy="280" r="9" fill="#151515"/>
+      <!-- Top bar light strip -->
+      <rect x="160" y="143" width="180" height="3" rx="1.5" fill="#c8ff00" opacity="0.6"/>
+      <defs>
+        <linearGradient id="consoleGrad" x1="80" y1="140" x2="420" y2="340" gradientUnits="userSpaceOnUse">
+          <stop offset="0%" stop-color="#1c1c1c" stop-opacity="0.4"/>
+          <stop offset="100%" stop-color="#080808" stop-opacity="0.6"/>
+        </linearGradient>
+        <linearGradient id="screenGrad" x1="162" y1="167" x2="338" y2="293" gradientUnits="userSpaceOnUse">
+          <stop offset="0%" stop-color="#0f1a00"/>
+          <stop offset="100%" stop-color="#050505"/>
+        </linearGradient>
+      </defs>
+    </svg>
+    <div class="hero-product-label">
+      <div class="pname">VOID NEXUS PRO</div>
+      <div class="pprice">$499</div>
+    </div>
+  </div>
+</section>
+
+<!-- MARQUEE -->
+<div class="marquee-wrap">
+  <div class="marquee-track">
+    <div class="marquee-item">Gaming Consoles <span class="dot"></span></div>
+    <div class="marquee-item">Flagship Phones <span class="dot"></span></div>
+    <div class="marquee-item">Pre-Built PCs <span class="dot"></span></div>
+    <div class="marquee-item">Void Ecosystem <span class="dot"></span></div>
+    <div class="marquee-item">Free Shipping <span class="dot"></span></div>
+    <div class="marquee-item">2-Year Warranty <span class="dot"></span></div>
+    <div class="marquee-item">Gaming Consoles <span class="dot"></span></div>
+    <div class="marquee-item">Flagship Phones <span class="dot"></span></div>
+    <div class="marquee-item">Pre-Built PCs <span class="dot"></span></div>
+    <div class="marquee-item">Void Ecosystem <span class="dot"></span></div>
+    <div class="marquee-item">Free Shipping <span class="dot"></span></div>
+    <div class="marquee-item">2-Year Warranty <span class="dot"></span></div>
+  </div>
+</div>
+
+<!-- CATEGORIES -->
+<section class="categories fade-up">
+  <div class="section-header">
+    <div>
+      <div class="section-label">Explore</div>
+      <div class="section-title">Categories</div>
+    </div>
+    <a href="#" class="section-link">View All Products</a>
+  </div>
+
+  <div class="cat-grid stagger">
+    <div class="cat-card cat-consoles">
+      <div class="cat-card-bg"></div>
+      <svg class="cat-icon" viewBox="0 0 320 260" fill="none">
+        <rect x="40" y="80" width="240" height="150" rx="28" fill="#111" stroke="#1e1e1e"/>
+        <rect x="110" y="98" width="100" height="78" rx="6" fill="#0a0a0a"/>
+        <text x="160" y="143" font-family="monospace" font-size="20" fill="#c8ff00" text-anchor="middle" opacity="0.8">VOID</text>
+        <rect x="110" y="101" width="100" height="3" rx="1.5" fill="#c8ff00" opacity="0.5"/>
+        <rect x="50" y="148" width="36" height="10" rx="3" fill="#1e1e1e"/>
+        <rect x="59" y="140" width="18" height="26" rx="3" fill="#1e1e1e"/>
+        <circle cx="262" cy="118" r="7" fill="#1a1a1a" stroke="#c8ff00" stroke-width="0.8"/>
+        <circle cx="277" cy="128" r="7" fill="#1a1a1a" stroke="#c8ff00" stroke-width="0.5"/>
+        <circle cx="247" cy="128" r="7" fill="#1a1a1a" stroke="#c8ff00" stroke-width="0.5"/>
+        <circle cx="262" cy="138" r="7" fill="#1a1a1a" stroke="#c8ff00" stroke-width="0.5"/>
+        <circle cx="88" cy="168" r="16" fill="#0e0e0e" stroke="#1e1e1e"/>
+        <circle cx="88" cy="168" r="7" fill="#151515"/>
+        <circle cx="232" cy="168" r="16" fill="#0e0e0e" stroke="#1e1e1e"/>
+        <circle cx="232" cy="168" r="7" fill="#151515"/>
+        <rect x="108" y="81" width="104" height="2" rx="1" fill="#c8ff00" opacity="0.4"/>
+      </svg>
+      <div class="cat-info">
+        <div class="cat-name">Consoles</div>
+        <div class="cat-count">12 Products</div>
+      </div>
+      <div class="cat-arrow">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+      </div>
+    </div>
+
+    <div class="cat-card cat-phones">
+      <div class="cat-card-bg"></div>
+      <svg class="cat-icon" viewBox="0 0 200 320" fill="none">
+        <rect x="55" y="30" width="90" height="172" rx="16" fill="#111" stroke="#1e1e1e"/>
+        <rect x="63" y="50" width="74" height="130" rx="5" fill="#0a0a0a"/>
+        <rect x="63" y="50" width="74" height="130" rx="5" fill="url(#phoneScreen)"/>
+        <text x="100" y="120" font-family="monospace" font-size="16" fill="#c8ff00" text-anchor="middle" opacity="0.9">VOID</text>
+        <text x="100" y="140" font-family="monospace" font-size="7" fill="#444" text-anchor="middle">PHONE OS 3.0</text>
+        <circle cx="100" cy="190" r="7" fill="#151515" stroke="#222"/>
+        <rect x="85" y="38" width="30" height="4" rx="2" fill="#1a1a1a"/>
+        <circle cx="122" cy="40" r="3" fill="#c8ff00" opacity="0.6"/>
+        <rect x="145" y="80" width="3" height="30" rx="1.5" fill="#222"/>
+        <rect x="145" y="116" width="3" height="20" rx="1.5" fill="#222"/>
+        <rect x="52" y="90" width="3" height="24" rx="1.5" fill="#222"/>
+        <defs>
+          <linearGradient id="phoneScreen" x1="63" y1="50" x2="137" y2="180" gradientUnits="userSpaceOnUse">
+            <stop offset="0%" stop-color="#0f1a00"/>
+            <stop offset="100%" stop-color="#050505"/>
+          </linearGradient>
+        </defs>
+      </svg>
+      <div class="cat-info">
+        <div class="cat-name">Phones</div>
+        <div class="cat-count">8 Products</div>
+      </div>
+      <div class="cat-arrow">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+      </div>
+    </div>
+
+    <div class="cat-card cat-prebuilts">
+      <div class="cat-card-bg"></div>
+      <svg class="cat-icon" viewBox="0 0 240 280" fill="none">
+        <!-- PC Tower -->
+        <rect x="70" y="40" width="100" height="170" rx="8" fill="#111" stroke="#1e1e1e"/>
+        <rect x="78" y="54" width="84" height="60" rx="4" fill="#0a0a0a" stroke="#1a1a1a"/>
+        <text x="120" y="90" font-family="monospace" font-size="14" fill="#c8ff00" text-anchor="middle" opacity="0.8">VOID</text>
+        <rect x="82" y="58" width="76" height="2" rx="1" fill="#c8ff00" opacity="0.5"/>
+        <!-- Drive bays -->
+        <rect x="78" y="122" width="84" height="8" rx="2" fill="#0d0d0d" stroke="#1e1e1e"/>
+        <rect x="78" y="134" width="84" height="8" rx="2" fill="#0d0d0d" stroke="#1e1e1e"/>
+        <!-- LED strips -->
+        <rect x="166" y="54" width="2" height="80" rx="1" fill="#c8ff00" opacity="0.7"/>
+        <rect x="72" y="54" width="2" height="80" rx="1" fill="#c8ff00" opacity="0.3"/>
+        <!-- Power button -->
+        <circle cx="120" cy="180" r="8" fill="#111" stroke="#c8ff00" stroke-width="1"/>
+        <circle cx="120" cy="180" r="3" fill="#c8ff00" opacity="0.8"/>
+        <!-- Base feet -->
+        <rect x="84" y="208" width="16" height="8" rx="2" fill="#0e0e0e"/>
+        <rect x="140" y="208" width="16" height="8" rx="2" fill="#0e0e0e"/>
+      </svg>
+      <div class="cat-info">
+        <div class="cat-name">Pre-Builts</div>
+        <div class="cat-count">6 Products</div>
+      </div>
+      <div class="cat-arrow">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FEATURED PRODUCTS -->
+<section class="products fade-up">
+  <div class="section-header">
+    <div>
+      <div class="section-label">Featured</div>
+      <div class="section-title">New Drops</div>
+    </div>
+    <a href="#" class="section-link">All Products</a>
+  </div>
+
+  <div class="filter-tabs">
+    <button class="filter-tab active">All</button>
+    <button class="filter-tab">Consoles</button>
+    <button class="filter-tab">Phones</button>
+    <button class="filter-tab">Pre-Builts</button>
+  </div>
+
+  <div class="product-grid stagger">
+
+    <!-- Product 1 -->
+    <div class="product-card" onclick="window.location='product.html'">
+      <div class="product-card-img">
+        <div class="product-tag">New</div>
+        <svg viewBox="0 0 300 240" fill="none">
+          <rect x="40" y="60" width="220" height="130" rx="22" fill="#141414" stroke="#1e1e1e"/>
+          <rect x="100" y="76" width="100" height="74" rx="5" fill="#0a0a0a"/>
+          <rect x="100" y="76" width="100" height="4" rx="2" fill="#c8ff00" opacity="0.6"/>
+          <text x="150" y="118" font-family="monospace" font-size="13" fill="#c8ff00" text-anchor="middle" opacity="0.85">VOID</text>
+          <rect x="48" y="120" width="26" height="8" rx="2.5" fill="#1a1a1a"/>
+          <rect x="56" y="113" width="10" height="22" rx="2.5" fill="#1a1a1a"/>
+          <circle cx="238" cy="96" r="6" fill="#111" stroke="#c8ff00" stroke-width="0.8"/>
+          <circle cx="250" cy="106" r="6" fill="#111" stroke="#c8ff00" stroke-width="0.5"/>
+          <circle cx="226" cy="106" r="6" fill="#111" stroke="#c8ff00" stroke-width="0.5"/>
+          <circle cx="238" cy="116" r="6" fill="#111" stroke="#c8ff00" stroke-width="0.5"/>
+          <circle cx="80" cy="152" r="12" fill="#0d0d0d" stroke="#1e1e1e"/>
+          <circle cx="80" cy="152" r="5" fill="#111"/>
+          <circle cx="220" cy="152" r="12" fill="#0d0d0d" stroke="#1e1e1e"/>
+          <circle cx="220" cy="152" r="5" fill="#111"/>
+        </svg>
+      </div>
+      <div class="product-info">
+        <div class="product-cat">Console</div>
+        <div class="product-name">VOID NEXUS PRO</div>
+        <div class="product-sub">8K Gaming · 240fps · Cloud Play</div>
+        <div class="product-bottom">
+          <div class="product-price">$499</div>
+          <button class="add-btn">+</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Product 2 -->
+    <div class="product-card" onclick="window.location='product.html'">
+      <div class="product-card-img">
+        <div class="product-tag">Hot</div>
+        <svg viewBox="0 0 200 300" fill="none">
+          <rect x="55" y="25" width="90" height="165" rx="14" fill="#141414" stroke="#1e1e1e"/>
+          <rect x="63" y="42" width="74" height="126" rx="4" fill="#0a0a0a"/>
+          <rect x="63" y="42" width="74" height="3" rx="1.5" fill="#c8ff00" opacity="0.6"/>
+          <text x="100" y="112" font-family="monospace" font-size="14" fill="#c8ff00" text-anchor="middle" opacity="0.85">VOID</text>
+          <text x="100" y="128" font-family="monospace" font-size="6" fill="#444" text-anchor="middle">SIGNAL X2</text>
+          <circle cx="100" cy="175" r="6" fill="#111" stroke="#1e1e1e"/>
+          <rect x="83" y="32" width="22" height="3" rx="1.5" fill="#1a1a1a"/>
+          <circle cx="116" cy="33" r="2.5" fill="#c8ff00" opacity="0.5"/>
+          <rect x="145" y="72" width="2.5" height="26" rx="1.25" fill="#1e1e1e"/>
+          <rect x="145" y="104" width="2.5" height="18" rx="1.25" fill="#1e1e1e"/>
+          <rect x="52.5" y="82" width="2.5" height="22" rx="1.25" fill="#1e1e1e"/>
+        </svg>
+      </div>
+      <div class="product-info">
+        <div class="product-cat">Phone</div>
+        <div class="product-name">VOID SIGNAL X2</div>
+        <div class="product-sub">200MP · Snapdragon X Elite</div>
+        <div class="product-bottom">
+          <div class="product-price">$1,199</div>
+          <button class="add-btn">+</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Product 3 -->
+    <div class="product-card" onclick="window.location='product.html'">
+      <div class="product-card-img">
+        <svg viewBox="0 0 220 280" fill="none">
+          <rect x="60" y="30" width="100" height="170" rx="7" fill="#141414" stroke="#1e1e1e"/>
+          <rect x="68" y="44" width="84" height="58" rx="4" fill="#0a0a0a"/>
+          <text x="110" y="78" font-family="monospace" font-size="12" fill="#c8ff00" text-anchor="middle" opacity="0.8">VOID</text>
+          <rect x="72" y="47" width="76" height="2" rx="1" fill="#c8ff00" opacity="0.5"/>
+          <rect x="68" y="110" width="84" height="8" rx="2" fill="#0c0c0c" stroke="#1a1a1a"/>
+          <rect x="68" y="122" width="84" height="8" rx="2" fill="#0c0c0c" stroke="#1a1a1a"/>
+          <rect x="156" y="44" width="2" height="80" rx="1" fill="#c8ff00" opacity="0.6"/>
+          <circle cx="110" cy="170" r="7" fill="#111" stroke="#c8ff00" stroke-width="0.8"/>
+          <circle cx="110" cy="170" r="3" fill="#c8ff00" opacity="0.7"/>
+          <rect x="74" y="198" width="14" height="6" rx="1.5" fill="#0d0d0d"/>
+          <rect x="132" y="198" width="14" height="6" rx="1.5" fill="#0d0d0d"/>
+        </svg>
+      </div>
+      <div class="product-info">
+        <div class="product-cat">Pre-Built</div>
+        <div class="product-name">VOID RIFT CORE</div>
+        <div class="product-sub">RTX 5090 · 64GB RAM · 4TB NVMe</div>
+        <div class="product-bottom">
+          <div class="product-price">$3,299 <span class="orig">$3,799</span></div>
+          <button class="add-btn">+</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Product 4 -->
+    <div class="product-card" onclick="window.location='product.html'">
+      <div class="product-card-img">
+        <div class="product-tag">Sale</div>
+        <svg viewBox="0 0 300 240" fill="none">
+          <rect x="40" y="55" width="220" height="135" rx="24" fill="#141414" stroke="#1e1e1e"/>
+          <rect x="102" y="72" width="96" height="76" rx="5" fill="#0a0a0a"/>
+          <rect x="102" y="72" width="96" height="3.5" rx="1.75" fill="#c8ff00" opacity="0.55"/>
+          <text x="150" y="116" font-family="monospace" font-size="12" fill="#c8ff00" text-anchor="middle" opacity="0.85">VOID</text>
+          <text x="150" y="130" font-family="monospace" font-size="6" fill="#555" text-anchor="middle">PORTABLE</text>
+          <circle cx="76" cy="148" r="14" fill="#0d0d0d" stroke="#1e1e1e"/>
+          <circle cx="76" cy="148" r="6" fill="#111"/>
+          <circle cx="224" cy="148" r="14" fill="#0d0d0d" stroke="#1e1e1e"/>
+          <circle cx="224" cy="148" r="6" fill="#111"/>
+          <rect x="48" y="116" width="24" height="8" rx="2.5" fill="#1a1a1a"/>
+          <rect x="56" y="109" width="8" height="22" rx="2.5" fill="#1a1a1a"/>
+          <circle cx="236" cy="92" r="5.5" fill="#111" stroke="#c8ff00" stroke-width="0.7"/>
+          <circle cx="247" cy="102" r="5.5" fill="#111" stroke="#c8ff00" stroke-width="0.4"/>
+          <circle cx="225" cy="102" r="5.5" fill="#111" stroke="#c8ff00" stroke-width="0.4"/>
+          <circle cx="236" cy="112" r="5.5" fill="#111" stroke="#c8ff00" stroke-width="0.4"/>
+        </svg>
+      </div>
+      <div class="product-info">
+        <div class="product-cat">Console</div>
+        <div class="product-name">VOID HANDHELD S</div>
+        <div class="product-sub">OLED · 144fps · 8hr Battery</div>
+        <div class="product-bottom">
+          <div class="product-price">$349 <span class="orig">$399</span></div>
+          <button class="add-btn">+</button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- FEATURE STRIP -->
+<div class="feature-strip fade-up">
+  <div class="feature-item">
+    <svg class="feature-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M5 12h14M12 5l7 7-7 7"/><rect x="2" y="3" width="7" height="7" rx="1" fill="none"/></svg>
+    <div class="feature-label">Free Shipping</div>
+    <div class="feature-desc">On all orders over $99. Express delivery in 2 business days.</div>
+  </div>
+  <div class="feature-item">
+    <svg class="feature-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+    <div class="feature-label">2-Year Warranty</div>
+    <div class="feature-desc">Every VOID product backed by full manufacturer guarantee.</div>
+  </div>
+  <div class="feature-item">
+    <svg class="feature-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 12a9 9 0 1018 0 9 9 0 00-18 0"/><path d="M12 8v4l3 3"/></svg>
+    <div class="feature-label">30-Day Returns</div>
+    <div class="feature-desc">Not satisfied? Return any unopened product, no questions.</div>
+  </div>
+  <div class="feature-item">
+    <svg class="feature-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.8 19.8 0 01-8.63-3.07A19.5 19.5 0 013.07 11 19.8 19.8 0 011 2.22 2 2 0 013 .04h3a2 2 0 012 1.72c.1.73.31 1.44.6 2.11a2 2 0 01-.45 2.11L7 7a16 16 0 006.86 6.86l.72-1.15a2 2 0 012.11-.45c.67.29 1.38.5 2.11.6A2 2 0 0122 14.9v2.02z"/></svg>
+    <div class="feature-label">24/7 Support</div>
+    <div class="feature-desc">Real humans, real answers. Chat, email or call anytime.</div>
+  </div>
+</div>
+
+<!-- BANNER -->
+<div style="padding: 80px 0;">
+  <div class="banner fade-up">
+    <div class="banner-text">
+      <div class="banner-eyebrow">Limited Series</div>
+      <div class="banner-title">VOID<br>SIGNAL<br>X2 PRO</div>
+      <div class="banner-body">The most powerful phone we've ever made. Snapdragon X Elite, 200MP tri-lens array, and a display that redefines what a screen can be.</div>
+      <a href="product.html" class="btn-primary" style="display:inline-block;"><span>Explore Phone</span></a>
+    </div>
+    <div class="banner-img-col">
+      <div class="banner-num">X</div>
+      <svg viewBox="0 0 200 340" fill="none">
+        <rect x="40" y="18" width="120" height="220" rx="18" fill="#111" stroke="#1e1e1e" stroke-width="1.5"/>
+        <rect x="50" y="36" width="100" height="170" rx="5" fill="#0a0a0a"/>
+        <rect x="50" y="36" width="100" height="4" rx="2" fill="#c8ff00" opacity="0.8"/>
+        <text x="100" y="128" font-family="monospace" font-size="20" fill="#c8ff00" text-anchor="middle" opacity="0.9">VOID</text>
+        <text x="100" y="150" font-family="monospace" font-size="8" fill="#555" text-anchor="middle">SIGNAL X2 PRO</text>
+        <circle cx="100" cy="228" r="9" fill="#111" stroke="#1e1e1e"/>
+        <rect x="76" y="28" width="28" height="4" rx="2" fill="#1a1a1a"/>
+        <circle cx="118" cy="30" r="3.5" fill="#c8ff00" opacity="0.7"/>
+        <rect x="160" y="80" width="3" height="32" rx="1.5" fill="#1e1e1e"/>
+        <rect x="160" y="120" width="3" height="22" rx="1.5" fill="#1e1e1e"/>
+        <rect x="37" y="90" width="3" height="28" rx="1.5" fill="#1e1e1e"/>
+        <!-- Camera module -->
+        <rect x="132" y="40" width="14" height="46" rx="5" fill="#0d0d0d" stroke="#1a1a1a"/>
+        <circle cx="139" cy="54" r="5" fill="#080808" stroke="#c8ff00" stroke-width="0.6"/>
+        <circle cx="139" cy="68" r="5" fill="#080808" stroke="#333"/>
+        <circle cx="139" cy="80" r="3" fill="#c8ff00" opacity="0.4"/>
+      </svg>
+    </div>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-top">
+    <div class="footer-brand">
+      <a href="index.html" class="logo">VOI<span>D</span></a>
+      <p>Hardware at the edge of existence. Built for creators, competitors, and those who demand more from their devices.</p>
+      <div class="social-links">
+        <a href="#" class="social-link">𝕏</a>
+        <a href="#" class="social-link">in</a>
+        <a href="#" class="social-link">▶</a>
+        <a href="#" class="social-link">◯</a>
+      </div>
+    </div>
+    <div class="footer-col">
+      <h4>Products</h4>
+      <ul>
+        <li><a href="#">Consoles</a></li>
+        <li><a href="#">Phones</a></li>
+        <li><a href="#">Pre-Builts</a></li>
+        <li><a href="#">Accessories</a></li>
+        <li><a href="#">Bundles</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h4>Company</h4>
+      <ul>
+        <li><a href="#">About VOID</a></li>
+        <li><a href="#">Careers</a></li>
+        <li><a href="#">Press</a></li>
+        <li><a href="#">Contact</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h4>Support</h4>
+      <ul>
+        <li><a href="#">Track Order</a></li>
+        <li><a href="#">Returns</a></li>
+        <li><a href="#">Warranty</a></li>
+        <li><a href="#">Help Center</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <p>© 2025 VOID Technologies. All rights reserved.</p>
+    <p>Privacy · Terms · Cookies</p>
+  </div>
+</footer>
+
+<script>
+  // Cursor
+  const cursor = document.getElementById('cursor');
+  const ring = document.getElementById('cursorRing');
+  document.addEventListener('mousemove', e => {
+    cursor.style.left = e.clientX + 'px';
+    cursor.style.top = e.clientY + 'px';
+    setTimeout(() => {
+      ring.style.left = e.clientX + 'px';
+      ring.style.top = e.clientY + 'px';
+    }, 60);
+  });
+
+  // Filter tabs
+  document.querySelectorAll('.filter-tab').forEach(tab => {
+    tab.addEventListener('click', () => {
+      document.querySelectorAll('.filter-tab').forEach(t => t.classList.remove('active'));
+      tab.classList.add('active');
+    });
+  });
+
+  // Scroll animations
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+      }
+    });
+  }, { threshold: 0.1 });
+
+  document.querySelectorAll('.fade-up, .stagger').forEach(el => observer.observe(el));
+</script>
+</body>
+</html>

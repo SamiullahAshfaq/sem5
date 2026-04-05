@@ -1,0 +1,135 @@
+
+<style>
+  .wrap { padding: 1rem 0; font-size: 13px; }
+  .legend { display: flex; gap: 16px; flex-wrap: wrap; margin-bottom: 16px; }
+  .legend-item { display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--color-text-secondary); }
+  .legend-swatch { width: 12px; height: 12px; border-radius: 3px; }
+  .chart-area { position: relative; }
+  .axis-labels { display: flex; position: relative; margin-left: 60px; margin-bottom: 4px; height: 16px; }
+  .tick { position: absolute; font-size: 11px; color: var(--color-text-tertiary); transform: translateX(-50%); }
+  .rows { display: flex; flex-direction: column; gap: 6px; }
+  .row { display: flex; align-items: center; gap: 0; }
+  .row-label { width: 60px; font-size: 12px; color: var(--color-text-secondary); text-align: right; padding-right: 10px; flex-shrink: 0; white-space: nowrap; }
+  .row-track { flex: 1; position: relative; height: 28px; background: var(--color-background-secondary); border-radius: 4px; overflow: hidden; }
+  .block { position: absolute; top: 3px; height: 22px; border-radius: 3px; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 500; box-sizing: border-box; cursor: pointer; transition: filter .15s; }
+  .block:hover { filter: brightness(1.1); }
+  .grid-line { position: absolute; top: 0; bottom: 0; width: 0.5px; background: var(--color-border-tertiary); pointer-events: none; }
+  .tooltip { position: fixed; background: var(--color-background-primary); border: 0.5px solid var(--color-border-secondary); border-radius: 6px; padding: 6px 10px; font-size: 12px; color: var(--color-text-primary); pointer-events: none; display: none; z-index: 9999; line-height: 1.5; }
+  .q-section { margin-top: 20px; }
+  .q-label { font-size: 11px; color: var(--color-text-tertiary); margin-left: 60px; margin-bottom: 4px; letter-spacing: .04em; }
+  .divider { height: 0.5px; background: var(--color-border-tertiary); margin: 14px 0 10px 60px; }
+</style>
+<div class="wrap">
+  <div class="legend">
+    <div class="legend-item"><span class="legend-swatch" style="background:#378ADD"></span>P1</div>
+    <div class="legend-item"><span class="legend-swatch" style="background:#1D9E75"></span>P2</div>
+    <div class="legend-item"><span class="legend-swatch" style="background:#D85A30"></span>P3</div>
+    <div class="legend-item"><span class="legend-swatch" style="background:#BA7517"></span>P4</div>
+    <div class="legend-item"><span class="legend-swatch" style="background:var(--color-background-secondary);border:0.5px solid var(--color-border-secondary)"></span>Idle</div>
+  </div>
+
+  <div class="chart-area" id="chart"></div>
+</div>
+<div class="tooltip" id="tip"></div>
+<script>
+const TOTAL = 29;
+const W = () => document.getElementById('chart').offsetWidth - 60;
+
+const colors = { P1:'#378ADD', P2:'#1D9E75', P3:'#D85A30', P4:'#BA7517', idle:'var(--color-background-secondary)' };
+const textColors = { P1:'#fff', P2:'#fff', P3:'#fff', P4:'#fff', idle:'var(--color-text-tertiary)' };
+
+// Rows: each queue level + CPU row
+// Events: {proc, start, end, queue, note}
+const events = [
+  // Q1
+  {proc:'P1', start:0,  end:4,  queue:'Q1', note:'P1 runs full q=4 quantum'},
+  {proc:'P2', start:4,  end:8,  queue:'Q1', note:'P2 runs full q=4 quantum'},
+  {proc:'P3', start:10, end:14, queue:'Q1', note:'P3 preempts P1, runs q=4'},
+  {proc:'P4', start:15, end:18, queue:'Q1', note:'P4 preempts P2, runs 3-unit burst'},
+  // Q2
+  {proc:'P1', start:8,  end:10, queue:'Q2', note:'P1 second burst (2 units)'},
+  {proc:'P2', start:14, end:15, queue:'Q2', note:'P2 runs 1 unit'},
+  {proc:'P1', start:18, end:26, queue:'Q2', note:'P1 runs q=8, demoted after'},
+  {proc:'P3', start:26, end:28, queue:'Q2', note:'P3 finishes remaining 2 units'},
+  // Q3
+  {proc:'P1', start:28, end:29, queue:'Q3', note:'P1 final 1 unit'},
+];
+
+const rows = [
+  { id:'Q1', label:'Q₁', desc:'q = 4' },
+  { id:'Q2', label:'Q₂', desc:'q = 8' },
+  { id:'Q3', label:'Q₃', desc:'q = 16' },
+];
+
+function pct(t) { return (t / TOTAL * 100).toFixed(4) + '%'; }
+
+function render() {
+  const chart = document.getElementById('chart');
+  const ticks = [0,4,8,10,14,15,18,26,28,29];
+
+  // Axis
+  let axisHtml = `<div class="axis-labels">`;
+  ticks.forEach(t => { axisHtml += `<div class="tick" style="left:${pct(t)}">${t}</div>`; });
+  axisHtml += `</div>`;
+
+  let rowsHtml = `<div class="rows">`;
+  rows.forEach(row => {
+    const evts = events.filter(e => e.queue === row.id);
+    // build idle fills
+    let filled = [];
+    evts.forEach(e => filled.push([e.start, e.end]));
+    filled.sort((a,b)=>a[0]-b[0]);
+
+    let trackContent = '';
+    // grid lines
+    ticks.forEach(t => { trackContent += `<div class="grid-line" style="left:${pct(t)}"></div>`; });
+
+    // idle blocks
+    let cursor = 0;
+    filled.forEach(([s,e]) => {
+      if (s > cursor) {
+        trackContent += `<div class="block" style="left:${pct(cursor)};width:${pct(s-cursor)};background:var(--color-background-secondary);border:0.5px solid var(--color-border-tertiary);cursor:default"></div>`;
+      }
+      cursor = e;
+    });
+    if (cursor < TOTAL) {
+      trackContent += `<div class="block" style="left:${pct(cursor)};width:${pct(TOTAL-cursor)};background:var(--color-background-secondary);border:0.5px solid var(--color-border-tertiary);cursor:default"></div>`;
+    }
+
+    // process blocks
+    evts.forEach(e => {
+      const w = e.end - e.start;
+      const showLabel = w >= 2;
+      trackContent += `<div class="block"
+        style="left:${pct(e.start)};width:calc(${pct(w)} - 1px);background:${colors[e.proc]};color:${textColors[e.proc]}"
+        data-proc="${e.proc}" data-start="${e.start}" data-end="${e.end}" data-note="${e.note}"
+        onmouseenter="showTip(event,this)" onmouseleave="hideTip()"
+      >${showLabel ? e.proc : ''}</div>`;
+    });
+
+    rowsHtml += `<div class="row">
+      <div class="row-label">${row.label}<br><span style="font-size:10px;color:var(--color-text-tertiary)">${row.desc}</span></div>
+      <div class="row-track">${trackContent}</div>
+    </div>`;
+  });
+  rowsHtml += `</div>`;
+
+  chart.innerHTML = axisHtml + rowsHtml + `<div style="margin-left:60px;margin-top:4px;font-size:11px;color:var(--color-text-tertiary)">Time →</div>`;
+}
+
+function showTip(e, el) {
+  const tip = document.getElementById('tip');
+  tip.innerHTML = `<b>${el.dataset.proc}</b> &nbsp;T=${el.dataset.start}–${el.dataset.end}<br><span style="color:var(--color-text-secondary)">${el.dataset.note}</span>`;
+  tip.style.display = 'block';
+  moveTip(e);
+}
+function moveTip(e) {
+  const tip = document.getElementById('tip');
+  tip.style.left = (e.clientX + 12) + 'px';
+  tip.style.top  = (e.clientY - 8) + 'px';
+}
+function hideTip() { document.getElementById('tip').style.display = 'none'; }
+document.addEventListener('mousemove', e => { if(document.getElementById('tip').style.display==='block') moveTip(e); });
+
+render();
+</script>

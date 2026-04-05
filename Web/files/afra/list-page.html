@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Phones — ASTRA</title>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+  <style>
+    :root {
+      --white: #ffffff;
+      --black: #0a0a0a;
+      --acid:  #c8ff00;
+      --gray:  #f4f4f4;
+      --mid:   #e2e2e2;
+      --muted: #888;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { background: var(--white); color: var(--black); font-family: 'Outfit', sans-serif; font-size: 14px; line-height: 1.6; -webkit-font-smoothing: antialiased; }
+    * { cursor: none !important; }
+    #cursor { position: fixed; width: 10px; height: 10px; background: var(--black); border-radius: 50%; pointer-events: none; z-index: 9999; transform: translate(-50%,-50%); transition: width .18s, height .18s, background .18s; }
+    #cursor.hover { width: 30px; height: 30px; background: var(--acid); }
+
+    /* NAV */
+    header { position: sticky; top: 0; z-index: 100; background: var(--white); border-bottom: 1px solid var(--black); display: flex; align-items: stretch; height: 56px; }
+    .nav-logo { display: flex; align-items: center; padding: 0 28px; font-family: 'Bebas Neue', sans-serif; font-size: 24px; letter-spacing: .14em; color: var(--black); text-decoration: none; border-right: 1px solid var(--black); }
+    .nav-logo em { background: var(--black); color: var(--acid); font-style: normal; padding: 0 3px; }
+    .nav-links { display: flex; }
+    .nav-links a { display: flex; align-items: center; padding: 0 20px; font-size: 11px; font-weight: 600; letter-spacing: .13em; text-transform: uppercase; color: var(--muted); text-decoration: none; border-right: 1px solid var(--mid); height: 100%; transition: color .2s, background .2s; }
+    .nav-links a:hover, .nav-links a.active { color: var(--black); background: var(--gray); }
+    .nav-right { margin-left: auto; display: flex; }
+    .nav-search { display: flex; align-items: center; gap: 8px; padding: 0 20px; border-left: 1px solid var(--black); }
+    .nav-search input { border: none; outline: none; background: none; font-family: 'Outfit', sans-serif; font-size: 13px; color: var(--black); width: 160px; }
+    .nav-search input::placeholder { color: var(--muted); }
+    .nav-icon { display: flex; align-items: center; justify-content: center; width: 54px; height: 100%; border: none; background: none; border-left: 1px solid var(--black); font-size: 16px; transition: background .2s; }
+    .nav-icon:hover { background: var(--gray); }
+    .nav-bag { display: flex; align-items: center; gap: 8px; padding: 0 24px; background: var(--black); color: var(--white); font-size: 12px; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; text-decoration: none; border-left: 1px solid var(--black); transition: background .2s; }
+    .nav-bag:hover { background: var(--acid); color: var(--black); }
+    .bag-dot { background: var(--acid); color: var(--black); font-size: 10px; font-weight: 700; border-radius: 50%; width: 18px; height: 18px; display: flex; align-items: center; justify-content: center; }
+    .nav-bag:hover .bag-dot { background: var(--black); color: var(--acid); }
+
+    /* PAGE HEAD */
+    .page-head { display: flex; align-items: flex-end; justify-content: space-between; padding: 52px 40px 28px; border-bottom: 1px solid var(--black); flex-wrap: wrap; gap: 24px; }
+    .page-head h1 { font-family: 'Bebas Neue', sans-serif; font-size: 88px; line-height: .88; letter-spacing: .02em; }
+    .page-head h1 small { font-size: 38px; color: var(--muted); display: block; margin-top: 6px; }
+    .page-head p { color: var(--muted); font-size: 13px; font-weight: 300; margin-top: 12px; max-width: 300px; }
+    .chip-row { display: flex; flex-wrap: wrap; gap: 0; }
+    .chip { padding: 11px 22px; font-size: 11px; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; border: 1px solid var(--black); margin-left: -1px; background: var(--white); color: var(--black); transition: all .15s; }
+    .chip:hover { background: var(--black); color: var(--white); }
+    .chip.active { background: var(--black); color: var(--acid); }
+
+    /* LAYOUT */
+    .layout { display: flex; align-items: flex-start; }
+
+    /* SIDEBAR */
+    .sidebar { width: 236px; flex-shrink: 0; border-right: 1px solid var(--black); }
+    .fg { border-bottom: 1px solid var(--black); }
+    .fg-head { padding: 14px 24px; font-size: 10px; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); display: flex; justify-content: space-between; align-items: center; }
+    .fg-head span { font-size: 9px; background: var(--black); color: var(--acid); padding: 1px 6px; letter-spacing: .06em; }
+    .fi { display: flex; align-items: center; padding: 10px 24px; border-top: 1px solid var(--mid); font-size: 13px; color: var(--black); transition: background .15s; }
+    .fi:hover { background: var(--gray); }
+    .fi label { display: flex; align-items: center; gap: 11px; width: 100%; }
+    .fi input[type=checkbox] { accent-color: var(--black); width: 13px; height: 13px; }
+    .fi .fc { margin-left: auto; font-size: 11px; color: var(--muted); }
+    .price-wrap { padding: 14px 24px; display: flex; gap: 8px; }
+    .price-wrap input { flex: 1; width: 0; border: 1px solid var(--black); padding: 8px 10px; font-family: 'Outfit', sans-serif; font-size: 12px; outline: none; }
+    .price-wrap input:focus { outline: 2px solid var(--acid); outline-offset: -2px; }
+    .btn-apply { display: block; width: calc(100% - 48px); margin: 0 24px 14px; background: var(--black); color: var(--white); border: none; padding: 10px 0; font-family: 'Outfit', sans-serif; font-size: 11px; font-weight: 600; letter-spacing: .12em; text-transform: uppercase; transition: background .2s; }
+    .btn-apply:hover { background: var(--acid); color: var(--black); }
+    .sw-row { display: flex; gap: 7px; flex-wrap: wrap; padding: 12px 24px 16px; }
+    .sw { width: 26px; height: 26px; border: 2px solid transparent; outline: 1px solid var(--mid); transition: outline-color .15s, border-color .15s; }
+    .sw:hover { outline-color: var(--black); }
+    .sw.active { outline-color: var(--black); border-color: var(--acid); }
+
+    /* MAIN */
+    .main { flex: 1; min-width: 0; }
+    .results-bar { display: flex; align-items: center; justify-content: space-between; padding: 14px 32px; border-bottom: 1px solid var(--mid); flex-wrap: wrap; gap: 10px; }
+    .results-count { font-size: 12px; color: var(--muted); }
+    .results-count b { color: var(--black); font-weight: 600; }
+    .sort-row { display: flex; align-items: center; gap: 10px; }
+    .sort-row label { font-size: 10px; color: var(--muted); letter-spacing: .1em; text-transform: uppercase; }
+    .sort-sel { border: 1px solid var(--black); background: var(--white); padding: 7px 12px; font-family: 'Outfit', sans-serif; font-size: 12px; color: var(--black); outline: none; }
+    .sort-sel:focus { outline: 2px solid var(--acid); outline-offset: -2px; }
+
+    /* GRID */
+    .grid { display: grid; grid-template-columns: repeat(3, 1fr); }
+    .card { text-decoration: none; color: inherit; border-right: 1px solid var(--mid); border-bottom: 1px solid var(--mid); display: flex; flex-direction: column; position: relative; overflow: hidden; transition: border-color .2s; }
+    .card:nth-child(3n) { border-right: none; }
+    .card:hover { border-color: var(--black); z-index: 1; }
+    .card:hover .card-img img { transform: scale(1.04); }
+    .card:hover .card-add { opacity: 1; transform: translateY(0); }
+
+    .card-badge { position: absolute; top: 14px; left: 14px; z-index: 2; font-size: 10px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; padding: 3px 8px; }
+    .b-sale { background: var(--acid); color: var(--black); }
+    .b-new  { background: var(--black); color: var(--white); }
+    .b-ltd  { background: var(--black); color: var(--acid); }
+    .card-fav { position: absolute; top: 12px; right: 12px; z-index: 2; background: none; border: none; font-size: 17px; color: var(--mid); transition: color .2s, transform .2s; }
+    .card-fav:hover { color: var(--black); transform: scale(1.2); }
+
+    .card-img { background: var(--gray); height: 280px; display: flex; align-items: center; justify-content: center; overflow: hidden; }
+    .card-img img { max-height: 230px; max-width: 84%; object-fit: contain; transition: transform .4s ease; }
+
+    .card-body { padding: 20px 20px 10px; flex: 1; }
+    .card-brand { font-size: 10px; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); margin-bottom: 4px; }
+    .card-name { font-size: 16px; font-weight: 500; line-height: 1.3; }
+    .card-spec { font-size: 12px; color: var(--muted); font-weight: 300; margin-top: 3px; }
+    .card-rating { display: flex; align-items: center; gap: 5px; margin-top: 8px; font-size: 11px; color: var(--muted); }
+    .card-rating .stars { color: var(--black); letter-spacing: 1px; }
+
+    .card-foot { padding: 12px 20px 20px; display: flex; align-items: center; justify-content: space-between; }
+    .card-prices { display: flex; align-items: baseline; gap: 8px; }
+    .p-now { font-family: 'Bebas Neue', sans-serif; font-size: 22px; letter-spacing: .04em; }
+    .p-was { font-size: 12px; color: var(--muted); text-decoration: line-through; }
+    .p-off { font-size: 10px; font-weight: 700; background: var(--acid); color: var(--black); padding: 1px 6px; }
+    .card-add { background: var(--black); color: var(--white); border: none; padding: 9px 16px; font-family: 'Outfit', sans-serif; font-size: 11px; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; opacity: 0; transform: translateY(8px); transition: opacity .22s, transform .22s, background .15s; }
+    .card-add:hover { background: var(--acid); color: var(--black); }
+
+    /* PAGINATION */
+    .pagination { display: flex; border-top: 1px solid var(--black); justify-content: center; padding: 40px 0 48px; }
+    .pg { width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 500; border: 1px solid var(--mid); margin-left: -1px; transition: all .15s; }
+    .pg:hover { background: var(--black); color: var(--white); border-color: var(--black); }
+    .pg.active { background: var(--black); color: var(--acid); border-color: var(--black); font-weight: 700; }
+
+    /* FOOTER */
+    footer { border-top: 1px solid var(--black); }
+    .foot-grid { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; border-bottom: 1px solid var(--mid); }
+    .foot-col { padding: 40px; border-right: 1px solid var(--mid); }
+    .foot-col:last-child { border-right: none; }
+    .foot-logo { font-family: 'Bebas Neue', sans-serif; font-size: 26px; letter-spacing: .14em; margin-bottom: 12px; }
+    .foot-logo em { background: var(--black); color: var(--acid); font-style: normal; padding: 0 4px; }
+    .foot-col > p { font-size: 13px; color: var(--muted); font-weight: 300; line-height: 1.75; max-width: 220px; }
+    .foot-col h4 { font-size: 10px; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); margin-bottom: 16px; }
+    .foot-col a { display: block; font-size: 13px; color: var(--black); text-decoration: none; margin-bottom: 9px; transition: color .15s; }
+    .foot-col a:hover { color: var(--muted); }
+    .foot-bottom { display: flex; justify-content: space-between; padding: 16px 40px; font-size: 11px; color: var(--muted); letter-spacing: .04em; flex-wrap: wrap; gap: 8px; }
+
+    /* RESPONSIVE */
+    @media (max-width: 980px) {
+      .nav-links { display: none; }
+      .sidebar { display: none; }
+      .grid { grid-template-columns: repeat(2, 1fr); }
+      .card:nth-child(3n) { border-right: 1px solid var(--mid); }
+      .card:nth-child(2n) { border-right: none; }
+      .page-head { padding: 32px 20px 24px; }
+      .page-head h1 { font-size: 60px; }
+      .foot-grid { grid-template-columns: 1fr 1fr; }
+      .foot-col { padding: 28px 24px; }
+      .foot-bottom { padding: 14px 24px; }
+      .results-bar { padding: 12px 20px; }
+    }
+    @media (max-width: 540px) {
+      .grid { grid-template-columns: 1fr; }
+      .card { border-right: none; }
+      .page-head h1 { font-size: 48px; }
+      .foot-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<div id="cursor"></div>
+
+<header>
+  <a href="#" class="nav-logo">A<em>S</em>TRA</a>
+  <nav class="nav-links">
+    <a href="#" class="active">Phones</a>
+    <a href="#">Audio</a>
+    <a href="#">Wearables</a>
+    <a href="#">Accessories</a>
+    <a href="#">New In</a>
+  </nav>
+  <div class="nav-right">
+    <div class="nav-search">
+      <span style="font-size:15px;color:var(--muted)">⌕</span>
+      <input type="text" placeholder="Search devices…"/>
+    </div>
+    <button class="nav-icon">♡</button>
+    <a href="#" class="nav-bag">Bag <span class="bag-dot">3</span></a>
+  </div>
+</header>
+
+<div class="page-head">
+  <div>
+    <h1>PHONES<small>2,340 Results</small></h1>
+    <p>Every device curated for performance. No compromises.</p>
+  </div>
+  <div class="chip-row">
+    <button class="chip active">All</button>
+    <button class="chip">Under ₨30K</button>
+    <button class="chip">Flagship</button>
+    <button class="chip">5G</button>
+    <button class="chip">Gaming</button>
+    <button class="chip">Camera</button>
+  </div>
+</div>
+
+<div class="layout">
+
+  <aside class="sidebar">
+    <div class="fg">
+      <div class="fg-head">Brand <span>Clear</span></div>
+      <div class="fi"><label><input type="checkbox" checked/> Samsung <span class="fc">612</span></label></div>
+      <div class="fi"><label><input type="checkbox" checked/> Apple <span class="fc">284</span></label></div>
+      <div class="fi"><label><input type="checkbox"/> Xiaomi <span class="fc">430</span></label></div>
+      <div class="fi"><label><input type="checkbox"/> OPPO <span class="fc">198</span></label></div>
+      <div class="fi"><label><input type="checkbox"/> OnePlus <span class="fc">89</span></label></div>
+      <div class="fi"><label><input type="checkbox"/> Realme <span class="fc">210</span></label></div>
+    </div>
+    <div class="fg">
+      <div class="fg-head">Price Range</div>
+      <div class="price-wrap">
+        <input type="number" placeholder="Min ₨" value="15000"/>
+        <input type="number" placeholder="Max ₨" value="350000"/>
+      </div>
+      <button class="btn-apply">Apply</button>
+    </div>
+    <div class="fg">
+      <div class="fg-head">Rating</div>
+      <div class="fi"><label><input type="checkbox"/> ★★★★★ only</label></div>
+      <div class="fi"><label><input type="checkbox" checked/> ★★★★ &amp; above</label></div>
+      <div class="fi"><label><input type="checkbox"/> ★★★ &amp; above</label></div>
+    </div>
+    <div class="fg">
+      <div class="fg-head">RAM</div>
+      <div class="fi"><label><input type="checkbox"/> 4 GB <span class="fc">320</span></label></div>
+      <div class="fi"><label><input type="checkbox" checked/> 8 GB <span class="fc">540</span></label></div>
+      <div class="fi"><label><input type="checkbox" checked/> 12 GB <span class="fc">310</span></label></div>
+      <div class="fi"><label><input type="checkbox"/> 16 GB+ <span class="fc">180</span></label></div>
+    </div>
+    <div class="fg">
+      <div class="fg-head">Storage</div>
+      <div class="fi"><label><input type="checkbox"/> 128 GB <span class="fc">640</span></label></div>
+      <div class="fi"><label><input type="checkbox" checked/> 256 GB <span class="fc">390</span></label></div>
+      <div class="fi"><label><input type="checkbox"/> 512 GB <span class="fc">120</span></label></div>
+    </div>
+    <div class="fg">
+      <div class="fg-head">Color</div>
+      <div class="sw-row">
+        <div class="sw active" style="background:#111"></div>
+        <div class="sw" style="background:#f0f0f0;outline-color:#ccc"></div>
+        <div class="sw" style="background:#3a6ea8"></div>
+        <div class="sw" style="background:#b5905a"></div>
+        <div class="sw" style="background:#c0c0c0"></div>
+        <div class="sw" style="background:#5a3faa"></div>
+        <div class="sw" style="background:#c8ff00"></div>
+      </div>
+    </div>
+    <div class="fg">
+      <div class="fg-head">Features</div>
+      <div class="fi"><label><input type="checkbox" checked/> PTA Approved</label></div>
+      <div class="fi"><label><input type="checkbox"/> 5G</label></div>
+      <div class="fi"><label><input type="checkbox"/> Free Shipping</label></div>
+      <div class="fi"><label><input type="checkbox" checked/> On Sale</label></div>
+    </div>
+  </aside>
+
+  <main class="main">
+    <div class="results-bar">
+      <div class="results-count"><b>2,340</b> products in Phones</div>
+      <div class="sort-row">
+        <label>Sort</label>
+        <select class="sort-sel">
+          <option>Best Match</option>
+          <option>Price: Low → High</option>
+          <option>Price: High → Low</option>
+          <option>Newest First</option>
+          <option>Top Rated</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="grid">
+
+      <a href="product-page.html" class="card">
+        <span class="card-badge b-sale">−22%</span>
+        <button class="card-fav" onclick="event.preventDefault()">♡</button>
+        <div class="card-img"><img src="https://images.unsplash.com/photo-1678685888221-cda773a3dcdb?w=400&q=80" alt="Galaxy S24 Ultra"/></div>
+        <div class="card-body">
+          <div class="card-brand">Samsung</div>
+          <div class="card-name">Galaxy S24 Ultra</div>
+          <div class="card-spec">12GB · 256GB · Titanium Black · 5G</div>
+          <div class="card-rating"><span class="stars">★★★★★</span> 4.9 (2,841)</div>
+        </div>
+        <div class="card-foot">
+          <div class="card-prices"><span class="p-now">₨ 289,999</span><span class="p-was">₨ 370,000</span><span class="p-off">−22%</span></div>
+          <button class="card-add" onclick="event.preventDefault()">Add</button>
+        </div>
+      </a>
+
+      <a href="product-page.html" class="card">
+        <span class="card-badge b-new">New</span>
+        <button class="card-fav" onclick="event.preventDefault()">♡</button>
+        <div class="card-img"><img src="https://images.unsplash.com/photo-1592899677977-9c10ca588bbd?w=400&q=80" alt="iPhone 15 Pro Max"/></div>
+        <div class="card-body">
+          <div class="card-brand">Apple</div>
+          <div class="card-name">iPhone 15 Pro Max</div>
+          <div class="card-spec">A17 Pro · 512GB · Natural Titanium</div>
+          <div class="card-rating"><span class="stars">★★★★★</span> 4.8 (1,654)</div>
+        </div>
+        <div class="card-foot">
+          <div class="card-prices"><span class="p-now">₨ 399,999</span><span class="p-was">₨ 420,000</span><span class="p-off">−5%</span></div>
+          <button class="card-add" onclick="event.preventDefault()">Add</button>
+        </div>
+      </a>
+
+      <a href="product-page.html" class="card">
+        <span class="card-badge b-ltd">Limited</span>
+        <button class="card-fav" onclick="event.preventDefault()">♡</button>
+        <div class="card-img"><img src="https://images.unsplash.com/photo-1580910051074-3eb694886505?w=400&q=80" alt="Xiaomi 14 Ultra"/></div>
+        <div class="card-body">
+          <div class="card-brand">Xiaomi</div>
+          <div class="card-name">14 Ultra</div>
+          <div class="card-spec">SD 8 Gen 3 · 16GB · Leica Optics</div>
+          <div class="card-rating"><span class="stars">★★★★★</span> 4.7 (987)</div>
+        </div>
+        <div class="card-foot">
+          <div class="card-prices"><span class="p-now">₨ 219,999</span><span class="p-was">₨ 260,000</span><span class="p-off">−15%</span></div>
+          <button class="card-add" onclick="event.preventDefault()">Add</button>
+        </div>
+      </a>
+
+      <a href="product-page.html" class="card">
+        <span class="card-badge b-sale">−18%</span>
+        <button class="card-fav" onclick="event.preventDefault()">♡</button>
+        <div class="card-img"><img src="https://images.unsplash.com/photo-1600861195091-690c92f1d2cc?w=400&q=80" alt="OPPO Find X7 Pro"/></div>
+        <div class="card-body">
+          <div class="card-brand">OPPO</div>
+          <div class="card-name">Find X7 Pro</div>
+          <div class="card-spec">12GB · 256GB · Hasselblad · 100W</div>
+          <div class="card-rating"><span class="stars">★★★★☆</span> 4.6 (743)</div>
+        </div>
+        <div class="card-foot">
+          <div class="card-prices"><span class="p-now">₨ 179,999</span><span class="p-was">₨ 219,000</span><span class="p-off">−18%</span></div>
+          <button class="card-add" onclick="event.preventDefault()">Add</button>
+        </div>
+      </a>
+
+      <a href="product-page.html" class="card">
+        <span class="card-badge b-new">New</span>
+        <button class="card-fav" onclick="event.preventDefault()">♡</button>
+        <div class="card-img"><img src="https://images.unsplash.com/photo-1565849904461-04a58ad377e0?w=400&q=80" alt="OnePlus 12"/></div>
+        <div class="card-body">
+          <div class="card-brand">OnePlus</div>
+          <div class="card-name">12</div>
+          <div class="card-spec">SD 8 Gen 3 · 16GB · 120Hz · 100W</div>
+          <div class="card-rating"><span class="stars">★★★★★</span> 4.8 (2,104)</div>
+        </div>
+        <div class="card-foot">
+          <div class="card-prices"><span class="p-now">₨ 189,999</span><span class="p-was">₨ 210,000</span><span class="p-off">−10%</span></div>
+          <button class="card-add" onclick="event.preventDefault()">Add</button>
+        </div>
+      </a>
+
+      <a href="product-page.html" class="card">
+        <span class="card-badge b-sale">−30%</span>
+        <button class="card-fav" onclick="event.preventDefault()">♡</button>
+        <div class="card-img"><img src="https://images.unsplash.com/photo-1574944985070-8f3ebc6b79d2?w=400&q=80" alt="Realme GT 5 Pro"/></div>
+        <div class="card-body">
+          <div class="card-brand">Realme</div>
+          <div class="card-name">GT 5 Pro</div>
+          <div class="card-spec">SD 8 Gen 3 · 12GB · 144Hz · 240W</div>
+          <div class="card-rating"><span class="stars">★★★★☆</span> 4.5 (512)</div>
+        </div>
+        <div class="card-foot">
+          <div class="card-prices"><span class="p-now">₨ 129,999</span><span class="p-was">₨ 185,000</span><span class="p-off">−30%</span></div>
+          <button class="card-add" onclick="event.preventDefault()">Add</button>
+        </div>
+      </a>
+
+    </div>
+
+    <div class="pagination">
+      <div class="pg">‹</div>
+      <div class="pg active">1</div>
+      <div class="pg">2</div>
+      <div class="pg">3</div>
+      <div class="pg">4</div>
+      <div class="pg">5</div>
+      <div class="pg">…</div>
+      <div class="pg">78</div>
+      <div class="pg">›</div>
+    </div>
+  </main>
+</div>
+
+<footer>
+  <div class="foot-grid">
+    <div class="foot-col">
+      <div class="foot-logo">A<em>S</em>TRA</div>
+      <p>Precision-curated technology. Every device passes our standard. No noise, just signal.</p>
+    </div>
+    <div class="foot-col">
+      <h4>Shop</h4>
+      <a href="#">Phones</a><a href="#">Audio</a><a href="#">Wearables</a><a href="#">Accessories</a><a href="#">New In</a>
+    </div>
+    <div class="foot-col">
+      <h4>Account</h4>
+      <a href="#">Sign In</a><a href="#">Register</a><a href="#">Orders</a><a href="#">Wishlist</a><a href="#">Returns</a>
+    </div>
+    <div class="foot-col">
+      <h4>Support</h4>
+      <a href="#">Help Center</a><a href="#">Delivery</a><a href="#">Warranty</a><a href="#">PTA Status</a><a href="#">Contact</a>
+    </div>
+  </div>
+  <div class="foot-bottom">
+    <span>© 2025 ASTRA Technologies. All rights reserved.</span>
+    <span>Assignment #1 — list-page.html</span>
+  </div>
+</footer>
+
+<script>
+  const cur = document.getElementById('cursor');
+  document.addEventListener('mousemove', e => { cur.style.left = e.clientX+'px'; cur.style.top = e.clientY+'px'; });
+  document.querySelectorAll('a,button,.chip,.fi,.sw,.pg').forEach(el => {
+    el.addEventListener('mouseenter', () => cur.classList.add('hover'));
+    el.addEventListener('mouseleave', () => cur.classList.remove('hover'));
+  });
+  document.querySelectorAll('.chip').forEach(c => {
+    c.addEventListener('click', () => { document.querySelectorAll('.chip').forEach(x => x.classList.remove('active')); c.classList.add('active'); });
+  });
+  document.querySelectorAll('.sw').forEach(s => {
+    s.addEventListener('click', () => { document.querySelectorAll('.sw').forEach(x => x.classList.remove('active')); s.classList.add('active'); });
+  });
+</script>
+</body>
+</html>
