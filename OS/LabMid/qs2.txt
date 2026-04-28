@@ -1,0 +1,4 @@
+Write a simple C program in which the parent process creates 2 child processes
+the first child performs an arithmentic operation on 2 numbers entered by user
+the second child creates directory ising mkdir command
+finally the parent displays the pid of each child and the task performed by them
