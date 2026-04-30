@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Form Manipulation - Person Table</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: Arial, sans-serif;
+      background: #f4f4f4;
+      padding: 30px;
+      color: #222;
+    }
+
+    h1 {
+      font-size: 1.3rem;
+      margin-bottom: 24px;
+      border-bottom: 2px solid #333;
+      padding-bottom: 8px;
+    }
+
+    .container {
+      display: flex;
+      gap: 40px;
+      flex-wrap: wrap;
+      align-items: flex-start;
+    }
+
+    /* TABLE */
+    .table-section { flex: 1; min-width: 320px; }
+    .table-section h2 { font-size: 1rem; margin-bottom: 10px; }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.9rem;
+      border: 1px solid #999;
+    }
+
+    th {
+      background: #c8c8c8;
+      padding: 8px 10px;
+      text-align: left;
+      border: 1px solid #999;
+    }
+
+    td {
+      padding: 7px 10px;
+      border: 1px solid #bbb;
+    }
+
+    tbody tr:nth-child(even) { background: #e4e4e4; }
+    tbody tr:nth-child(odd)  { background: #fff; }
+
+    .act-btn {
+      background: none;
+      border: none;
+      color: #00c;
+      text-decoration: underline;
+      cursor: pointer;
+      font-size: 0.88rem;
+      padding: 0;
+    }
+    .act-btn:hover { color: #009; }
+
+    /* FORM */
+    .form-section { flex: 0 0 300px; }
+    .form-section h2 { font-size: 1rem; margin-bottom: 10px; }
+
+    .form-box {
+      border: 1px solid #aaa;
+      background: #ececec;
+      padding: 18px 20px;
+    }
+
+    .form-row {
+      display: flex;
+      align-items: center;
+      margin-bottom: 12px;
+      gap: 10px;
+    }
+
+    .form-row label.field-label {
+      min-width: 58px;
+      text-align: right;
+      font-size: 0.88rem;
+    }
+
+    .form-row input[type="text"],
+    .form-row input[type="number"],
+    .form-row select {
+      flex: 1;
+      padding: 4px 6px;
+      border: 1px solid #888;
+      font-size: 0.88rem;
+      font-family: inherit;
+      background: #fff;
+    }
+
+    .radio-group {
+      display: flex;
+      gap: 14px;
+      flex: 1;
+    }
+
+    .radio-group label {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 0.88rem;
+      cursor: pointer;
+    }
+
+    .btn-row {
+      display: flex;
+      gap: 8px;
+      margin-top: 6px;
+    }
+
+    .btn-row button {
+      padding: 5px 14px;
+      border: 1px solid #666;
+      background: #ddd;
+      font-size: 0.88rem;
+      cursor: pointer;
+      border-radius: 2px;
+    }
+
+    .btn-row button:hover:not(:disabled) { background: #c8c8c8; }
+
+    .btn-row button:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+    }
+  </style>
+</head>
+<body>
+
+<h1>Form Manipulation, Creating and Updating Table</h1>
+
+<div class="container">
+
+  <!-- TABLE -->
+  <div class="table-section">
+    <h2>List of Persons</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Gender</th>
+          <th>Age</th>
+          <th>City</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody id="tableBody"></tbody>
+    </table>
+  </div>
+
+  <!-- FORM -->
+  <div class="form-section">
+    <h2>Add / Update Person Form</h2>
+    <div class="form-box">
+
+      <div class="form-row">
+        <label class="field-label" for="nameInput">Name :</label>
+        <input type="text" id="nameInput" />
+      </div>
+
+      <div class="form-row">
+        <label class="field-label">Gender :</label>
+        <div class="radio-group">
+          <label><input type="radio" name="gender" value="Male" checked /> Male</label>
+          <label><input type="radio" name="gender" value="Female" /> Female</label>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <label class="field-label" for="ageInput">Age :</label>
+        <input type="number" id="ageInput" min="1" max="120" />
+      </div>
+
+      <div class="form-row">
+        <label class="field-label" for="citySelect">City :</label>
+        <select id="citySelect">
+          <option>Lahore</option>
+          <option>Karachi</option>
+          <option>Islamabad</option>
+          <option>Peshawar</option>
+          <option>Quetta</option>
+          <option>Multan</option>
+          <option>Faisalabad</option>
+          <option>Rawalpindi</option>
+        </select>
+      </div>
+
+      <div class="btn-row">
+        <button id="resetBtn">reset</button>
+        <button id="addBtn">add</button>
+        <button id="updateBtn" disabled>update</button>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script>
+  const nameInput  = document.getElementById('nameInput');
+  const ageInput   = document.getElementById('ageInput');
+  const citySelect = document.getElementById('citySelect');
+  const tableBody  = document.getElementById('tableBody');
+  const addBtn     = document.getElementById('addBtn');
+  const updateBtn  = document.getElementById('updateBtn');
+  const resetBtn   = document.getElementById('resetBtn');
+
+  let editingRow = null;
+
+  function getGender() {
+    return document.querySelector('input[name="gender"]:checked').value;
+  }
+
+  function setGender(val) {
+    document.querySelector(`input[name="gender"][value="${val}"]`).checked = true;
+  }
+
+  function resetForm() {
+    nameInput.value  = '';
+    ageInput.value   = '';
+    citySelect.value = 'Lahore';
+    setGender('Male');
+    addBtn.disabled    = false;
+    updateBtn.disabled = true;
+    editingRow = null;
+  }
+
+  function createRow(name, gender, age, city) {
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td>${name}</td>
+      <td>${gender}</td>
+      <td>${age}</td>
+      <td>${city}</td>
+      <td>
+        <button class="act-btn upd">Update</button> /
+        <button class="act-btn rem">Remove</button>
+      </td>
+    `;
+    tr.querySelector('.upd').addEventListener('click', () => loadRow(tr));
+    tr.querySelector('.rem').addEventListener('click', () => {
+      if (editingRow === tr) resetForm();
+      tr.remove();
+    });
+    return tr;
+  }
+
+  function loadRow(tr) {
+    const cells      = tr.querySelectorAll('td');
+    nameInput.value  = cells[0].textContent;
+    setGender(cells[1].textContent.trim());
+    ageInput.value   = cells[2].textContent;
+    citySelect.value = cells[3].textContent;
+    addBtn.disabled    = true;
+    updateBtn.disabled = false;
+    editingRow = tr;
+  }
+
+  addBtn.addEventListener('click', () => {
+    const name = nameInput.value.trim();
+    const age  = ageInput.value.trim();
+    if (!name || !age) { alert('Please fill in Name and Age.'); return; }
+    tableBody.appendChild(createRow(name, getGender(), age, citySelect.value));
+    resetForm();
+  });
+
+  updateBtn.addEventListener('click', () => {
+    if (!editingRow) return;
+    const name = nameInput.value.trim();
+    const age  = ageInput.value.trim();
+    if (!name || !age) { alert('Please fill in Name and Age.'); return; }
+    const cells = editingRow.querySelectorAll('td');
+    cells[0].textContent = name;
+    cells[1].textContent = getGender();
+    cells[2].textContent = age;
+    cells[3].textContent = citySelect.value;
+    resetForm();
+  });
+
+  resetBtn.addEventListener('click', resetForm);
+</script>
+</body>
+</html>

@@ -1,0 +1,647 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Event Handling & DOM Manipulation Tasks</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Syne:wght@400;600;800&display=swap" rel="stylesheet"/>
+<style>
+:root {
+  --bg: #0e0e11;
+  --surface: #16161c;
+  --card: #1d1d26;
+  --border: #2e2e3e;
+  --accent: #7c6af7;
+  --accent2: #f76a8c;
+  --accent3: #6af7c2;
+  --text: #e8e8f0;
+  --muted: #7a7a99;
+  --radius: 10px;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Syne', sans-serif;
+  min-height: 100vh;
+  padding: 40px 20px 80px;
+}
+
+h1 {
+  text-align: center;
+  font-size: 2rem;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  margin-bottom: 6px;
+  background: linear-gradient(90deg, var(--accent), var(--accent2), var(--accent3));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.subtitle {
+  text-align: center;
+  color: var(--muted);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.78rem;
+  margin-bottom: 48px;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+  gap: 24px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+/* Task 11 spans full width */
+.full { grid-column: 1 / -1; }
+
+.card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  animation: fadeUp 0.5s ease both;
+}
+
+@keyframes fadeUp {
+  from { opacity:0; transform:translateY(16px); }
+  to   { opacity:1; transform:translateY(0); }
+}
+
+.card:nth-child(2)  { animation-delay:.05s; }
+.card:nth-child(3)  { animation-delay:.10s; }
+.card:nth-child(4)  { animation-delay:.15s; }
+.card:nth-child(5)  { animation-delay:.20s; }
+.card:nth-child(6)  { animation-delay:.25s; }
+.card:nth-child(7)  { animation-delay:.30s; }
+.card:nth-child(8)  { animation-delay:.35s; }
+.card:nth-child(9)  { animation-delay:.40s; }
+.card:nth-child(10) { animation-delay:.45s; }
+.card:nth-child(11) { animation-delay:.50s; }
+
+.task-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--accent);
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+}
+
+.card h2 {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text);
+  line-height: 1.3;
+}
+
+/* Inputs */
+input[type="text"],
+input[type="number"],
+select {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  color: var(--text);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.85rem;
+  padding: 8px 12px;
+  outline: none;
+  transition: border-color 0.2s;
+  width: 100%;
+}
+
+input:focus, select:focus {
+  border-color: var(--accent);
+}
+
+/* Task 10 focus/blur highlight */
+.t10-focused { background: #1a1a3a !important; border-color: var(--accent3) !important; }
+.t10-blurred { background: #2a1a1a !important; border-color: var(--accent2) !important; }
+
+/* Buttons */
+button {
+  font-family: 'Syne', sans-serif;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 8px 18px;
+  background: var(--surface);
+  color: var(--text);
+  transition: background 0.15s, border-color 0.15s, transform 0.1s;
+}
+
+button:hover { background: var(--border); border-color: var(--accent); transform: translateY(-1px); }
+button:active { transform: translateY(0); }
+
+.btn-accent {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #fff;
+}
+.btn-accent:hover { background: #6559e0; border-color: #6559e0; }
+
+.btn-danger {
+  background: transparent;
+  border-color: var(--accent2);
+  color: var(--accent2);
+}
+.btn-danger:hover { background: var(--accent2); color: #fff; }
+
+.btn-success {
+  background: transparent;
+  border-color: var(--accent3);
+  color: var(--accent3);
+}
+.btn-success:hover { background: var(--accent3); color: #0e0e11; }
+
+/* Row utility */
+.row { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+
+/* Result div */
+.result {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 10px 14px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.88rem;
+  color: var(--accent3);
+  min-height: 38px;
+}
+
+.error-msg { color: var(--accent2); font-size: 0.82rem; font-family: 'JetBrains Mono', monospace; }
+
+/* Radio group */
+.radio-group { display: flex; gap: 16px; flex-wrap: wrap; }
+.radio-group label {
+  display: flex; align-items: center; gap: 6px;
+  font-size: 0.88rem; cursor: pointer; color: var(--text);
+}
+input[type="radio"] { accent-color: var(--accent); }
+
+/* Task 3 - link table */
+.attr-table { width: 100%; border-collapse: collapse; font-size: 0.82rem; font-family: 'JetBrains Mono', monospace; }
+.attr-table th { background: var(--surface); color: var(--accent); padding: 6px 10px; text-align: left; border: 1px solid var(--border); }
+.attr-table td { padding: 6px 10px; border: 1px solid var(--border); color: var(--text); }
+
+/* Task 3 link */
+#t3link {
+  color: var(--accent3);
+  text-decoration: underline;
+  cursor: pointer;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.9rem;
+}
+
+/* Task 5 paragraph */
+#t5para {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 12px;
+  font-size: 0.88rem;
+  line-height: 1.7;
+  color: var(--text);
+  transition: all 0.3s;
+}
+
+/* Task 9 paragraph */
+#t9para {
+  background: var(--surface);
+  border: 1px dashed var(--border);
+  border-radius: 6px;
+  padding: 14px;
+  font-size: 0.88rem;
+  line-height: 1.7;
+  cursor: default;
+  transition: background 0.3s, color 0.3s;
+}
+
+/* Task 8 counter */
+#counterDisplay {
+  font-size: 3rem;
+  font-weight: 800;
+  text-align: center;
+  color: var(--accent3);
+  font-family: 'JetBrains Mono', monospace;
+  padding: 10px;
+}
+
+/* ── TASK 11: TODO ── */
+.todo-input-row { display: flex; gap: 8px; }
+.todo-input-row input { flex: 1; }
+
+#todoList {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-height: 340px;
+  overflow-y: auto;
+  padding-right: 4px;
+}
+
+#todoList::-webkit-scrollbar { width: 4px; }
+#todoList::-webkit-scrollbar-track { background: var(--surface); }
+#todoList::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+
+.todo-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 10px 12px;
+  transition: opacity 0.3s, border-color 0.3s;
+}
+
+.todo-item.done {
+  opacity: 0.45;
+  border-color: #2a2a35;
+}
+
+.todo-item.done .todo-text {
+  text-decoration: line-through;
+  color: var(--muted);
+}
+
+.todo-text {
+  flex: 1;
+  font-size: 0.88rem;
+  word-break: break-word;
+}
+
+.todo-actions { display: flex; gap: 6px; flex-shrink: 0; }
+
+.todo-actions button {
+  padding: 4px 10px;
+  font-size: 0.75rem;
+  border-radius: 4px;
+}
+
+.todo-stats {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.75rem;
+  color: var(--muted);
+  display: flex;
+  gap: 16px;
+}
+
+.todo-stats span { color: var(--accent3); }
+
+.priority-badge {
+  font-size: 0.65rem;
+  font-family: 'JetBrains Mono', monospace;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.p-high   { background: #3a1a22; color: var(--accent2); border: 1px solid var(--accent2); }
+.p-medium { background: #2a2a1a; color: #f7c06a; border: 1px solid #f7c06a; }
+.p-low    { background: #1a2a1a; color: var(--accent3); border: 1px solid var(--accent3); }
+
+.filter-row { display: flex; gap: 6px; flex-wrap: wrap; }
+.filter-btn { padding: 4px 12px; font-size: 0.78rem; border-radius: 20px; }
+.filter-btn.active { background: var(--accent); border-color: var(--accent); color: #fff; }
+</style>
+</head>
+<body>
+
+<h1>DOM Manipulation Tasks</h1>
+<p class="subtitle">// event handling · form control · dynamic UI — 11 tasks</p>
+
+<div class="grid">
+
+  <!-- ── TASK 1 ── -->
+  <div class="card">
+    <span class="task-label">Task 01</span>
+    <h2>Square of a Number</h2>
+    <input type="number" id="t1num" placeholder="Enter a number"/>
+    <button class="btn-accent" onclick="task1()">Show Square</button>
+  </div>
+
+  <!-- ── TASK 2 ── -->
+  <div class="card">
+    <span class="task-label">Task 02</span>
+    <h2>Arithmetic Calculator</h2>
+    <div class="row">
+      <input type="number" id="t2a" placeholder="Number 1" style="flex:1"/>
+      <input type="number" id="t2b" placeholder="Number 2" style="flex:1"/>
+    </div>
+    <div class="radio-group">
+      <label><input type="radio" name="op" value="add" checked/> Add</label>
+      <label><input type="radio" name="op" value="sub"/> Subtract</label>
+      <label><input type="radio" name="op" value="mul"/> Multiply</label>
+      <label><input type="radio" name="op" value="div"/> Divide</label>
+    </div>
+    <button class="btn-accent" onclick="task2()">Calculate</button>
+    <div class="result" id="t2result">Result will appear here…</div>
+  </div>
+
+  <!-- ── TASK 3 ── -->
+  <div class="card">
+    <span class="task-label">Task 03</span>
+    <h2>Link Attribute Inspector</h2>
+    <a id="t3link"
+       href="https://example.com"
+       title="Example Website"
+       target="_blank"
+       rel="noopener noreferrer"
+       onclick="task3(event)">
+      Click to inspect this link →
+    </a>
+    <div id="t3table"></div>
+  </div>
+
+  <!-- ── TASK 4 ── -->
+  <div class="card">
+    <span class="task-label">Task 04</span>
+    <h2>Remove City from List</h2>
+    <select id="t4select" size="5" style="height:auto">
+      <option>Lahore</option>
+      <option>Karachi</option>
+      <option>Islamabad</option>
+      <option>Peshawar</option>
+      <option>Multan</option>
+    </select>
+    <div class="row">
+      <button class="btn-danger" onclick="task4()">Remove</button>
+      <span class="error-msg" id="t4err"></span>
+    </div>
+  </div>
+
+  <!-- ── TASK 5 ── -->
+  <div class="card">
+    <span class="task-label">Task 05</span>
+    <h2>Dynamic CSS on Paragraph</h2>
+    <p id="t5para">This is a sample paragraph. Apply any CSS property and value to style it dynamically using the inputs below. Try things like <em>color</em>, <em>font-size</em>, <em>border</em>, etc.</p>
+    <div class="row">
+      <input type="text" id="t5prop" placeholder="CSS property" style="flex:1"/>
+      <input type="text" id="t5val" placeholder="value" style="flex:1"/>
+    </div>
+    <button class="btn-accent" onclick="task5()">Apply</button>
+  </div>
+
+  <!-- ── TASK 6 ── -->
+  <div class="card">
+    <span class="task-label">Task 06</span>
+    <h2>Dropdown → Radio Sync</h2>
+    <div class="radio-group">
+      <label><input type="radio" name="t6gender" value="Male" id="t6male"/> Male</label>
+      <label><input type="radio" name="t6gender" value="Female" id="t6female"/> Female</label>
+    </div>
+    <select id="t6select">
+      <option value="">-- Select --</option>
+      <option value="Male">Male</option>
+      <option value="Female">Female</option>
+    </select>
+    <button class="btn-accent" onclick="task6()">Apply</button>
+  </div>
+
+  <!-- ── TASK 7 ── -->
+  <div class="card">
+    <span class="task-label">Task 07</span>
+    <h2>Add Country to List</h2>
+    <select id="t7select" size="5" style="height:auto">
+      <option>Pakistan</option>
+      <option>India</option>
+      <option>China</option>
+      <option>USA</option>
+      <option>UK</option>
+    </select>
+    <div class="row">
+      <input type="text" id="t7input" placeholder="Enter country name" style="flex:1"/>
+      <button class="btn-success" onclick="task7()">Add</button>
+    </div>
+  </div>
+
+  <!-- ── TASK 8 ── -->
+  <div class="card">
+    <span class="task-label">Task 08</span>
+    <h2>Counter</h2>
+    <div id="counterDisplay">0</div>
+    <div class="row" style="justify-content:center">
+      <button class="btn-success" onclick="changeCounter(1)">＋ Increment</button>
+      <button class="btn-danger" onclick="changeCounter(-1)">－ Decrement</button>
+    </div>
+    <div class="error-msg" id="t8err" style="text-align:center"></div>
+  </div>
+
+  <!-- ── TASK 9 ── -->
+  <div class="card">
+    <span class="task-label">Task 09</span>
+    <h2>Mouse Enter / Leave Color</h2>
+    <p id="t9para"
+       onmouseenter="this.style.background='#1e1a3a'; this.style.color='#c6bfff';"
+       onmouseleave="this.style.background=''; this.style.color='';">
+      Hover over this paragraph to see the background color change on mouse enter, and revert when you move away. Simple and effective!
+    </p>
+  </div>
+
+  <!-- ── TASK 10 ── -->
+  <div class="card">
+    <span class="task-label">Task 10</span>
+    <h2>Focus / Blur Color Change</h2>
+    <input type="text" placeholder="Field One — click to focus"
+      onfocus="this.classList.add('t10-focused'); this.classList.remove('t10-blurred');"
+      onblur="this.classList.remove('t10-focused'); this.classList.add('t10-blurred');"/>
+    <input type="text" placeholder="Field Two — click to focus"
+      onfocus="this.classList.add('t10-focused'); this.classList.remove('t10-blurred');"
+      onblur="this.classList.remove('t10-focused'); this.classList.add('t10-blurred');"/>
+  </div>
+
+  <!-- ── TASK 11 ── -->
+  <div class="card full">
+    <span class="task-label">Task 11</span>
+    <h2>To-Do List Manager</h2>
+
+    <div class="todo-stats">
+      Total: <span id="tdTotal">0</span>
+      &nbsp;|&nbsp; Pending: <span id="tdPending">0</span>
+      &nbsp;|&nbsp; Done: <span id="tdDone">0</span>
+    </div>
+
+    <div class="todo-input-row">
+      <input type="text" id="todoInput" placeholder="Add a new task…" onkeydown="if(event.key==='Enter') addTodo()"/>
+      <select id="todoPriority" style="width:auto">
+        <option value="low">Low</option>
+        <option value="medium" selected>Medium</option>
+        <option value="high">High</option>
+      </select>
+      <button class="btn-accent" onclick="addTodo()">Add</button>
+    </div>
+
+    <div class="filter-row">
+      <button class="filter-btn active" onclick="setFilter('all',this)">All</button>
+      <button class="filter-btn" onclick="setFilter('pending',this)">Pending</button>
+      <button class="filter-btn" onclick="setFilter('done',this)">Done</button>
+      <button class="filter-btn btn-danger" onclick="clearDone()">Clear Done</button>
+    </div>
+
+    <ol id="todoList"></ol>
+  </div>
+
+</div><!-- /grid -->
+
+<script>
+/* ── TASK 1 ── */
+function task1() {
+  const n = parseFloat(document.getElementById('t1num').value);
+  if (isNaN(n)) { alert('Please enter a valid number.'); return; }
+  alert(`Square of ${n} = ${n * n}`);
+}
+
+/* ── TASK 2 ── */
+function task2() {
+  const a = parseFloat(document.getElementById('t2a').value);
+  const b = parseFloat(document.getElementById('t2b').value);
+  const op = document.querySelector('input[name="op"]:checked').value;
+  const el = document.getElementById('t2result');
+  if (isNaN(a) || isNaN(b)) { el.textContent = 'Enter both numbers.'; return; }
+  const ops = { add: ['+', a+b], sub: ['-', a-b], mul: ['×', a*b], div: ['÷', b===0 ? 'Cannot divide by zero' : a/b] };
+  const [sym, res] = ops[op];
+  el.textContent = `${a} ${sym} ${b} = ${res}`;
+}
+
+/* ── TASK 3 ── */
+function task3(e) {
+  e.preventDefault();
+  const link = document.getElementById('t3link');
+  const attrs = ['href','title','target','rel'];
+  const container = document.getElementById('t3table');
+  let html = '<table class="attr-table"><tr><th>Attribute</th><th>Value</th></tr>';
+  attrs.forEach(a => { html += `<tr><td>${a}</td><td>${link.getAttribute(a)}</td></tr>`; });
+  html += '</table>';
+  container.innerHTML = html;
+}
+
+/* ── TASK 4 ── */
+function task4() {
+  const sel = document.getElementById('t4select');
+  const err = document.getElementById('t4err');
+  if (sel.selectedIndex === -1) { err.textContent = 'City must be selected to remove.'; return; }
+  err.textContent = '';
+  sel.remove(sel.selectedIndex);
+}
+
+/* ── TASK 5 ── */
+function task5() {
+  const prop = document.getElementById('t5prop').value.trim();
+  const val  = document.getElementById('t5val').value.trim();
+  if (!prop || !val) { alert('Enter both property and value.'); return; }
+  document.getElementById('t5para').style[prop] = val;
+}
+
+/* ── TASK 6 ── */
+function task6() {
+  const val = document.getElementById('t6select').value;
+  if (!val) { alert('Please select a value from the dropdown.'); return; }
+  document.querySelector(`input[name="t6gender"][value="${val}"]`).checked = true;
+}
+
+/* ── TASK 7 ── */
+function task7() {
+  const input = document.getElementById('t7input');
+  const sel   = document.getElementById('t7select');
+  const name  = input.value.trim();
+  if (!name) { alert('Please enter a country name.'); return; }
+  const existing = Array.from(sel.options).map(o => o.text.toLowerCase());
+  if (existing.includes(name.toLowerCase())) { alert('Country already exist in list.'); return; }
+  const opt = new Option(name, name);
+  sel.add(opt);
+  input.value = '';
+}
+
+/* ── TASK 8 ── */
+let counterVal = 0;
+function changeCounter(delta) {
+  const err = document.getElementById('t8err');
+  if (counterVal + delta < 0) { err.textContent = 'Value cannot go negative!'; return; }
+  err.textContent = '';
+  counterVal += delta;
+  document.getElementById('counterDisplay').textContent = counterVal;
+}
+
+/* ── TASK 11: TODO ── */
+let todos = [];
+let filter = 'all';
+
+function addTodo() {
+  const input = document.getElementById('todoInput');
+  const text  = input.value.trim();
+  if (!text) { alert('Please enter a task.'); return; }
+  const priority = document.getElementById('todoPriority').value;
+  todos.push({ id: Date.now(), text, done: false, priority });
+  input.value = '';
+  renderTodos();
+}
+
+function deleteTodo(id) {
+  todos = todos.filter(t => t.id !== id);
+  renderTodos();
+}
+
+function markDone(id) {
+  todos = todos.map(t => t.id === id ? {...t, done: !t.done} : t);
+  // move done items to end
+  todos.sort((a, b) => a.done - b.done);
+  renderTodos();
+}
+
+function setFilter(f, btn) {
+  filter = f;
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderTodos();
+}
+
+function clearDone() {
+  todos = todos.filter(t => !t.done);
+  renderTodos();
+}
+
+function renderTodos() {
+  const list = document.getElementById('todoList');
+  const shown = filter === 'all' ? todos
+              : filter === 'done' ? todos.filter(t => t.done)
+              : todos.filter(t => !t.done);
+
+  list.innerHTML = '';
+  shown.forEach(t => {
+    const li = document.createElement('li');
+    li.className = 'todo-item' + (t.done ? ' done' : '');
+
+    const pClass = { high:'p-high', medium:'p-medium', low:'p-low' }[t.priority];
+    li.innerHTML = `
+      <span class="priority-badge ${pClass}">${t.priority.toUpperCase()}</span>
+      <span class="todo-text">${t.text}</span>
+      <div class="todo-actions">
+        <button class="${t.done ? 'btn-danger' : 'btn-success'}" onclick="markDone(${t.id})">
+          ${t.done ? 'Undo' : 'Done'}
+        </button>
+        <button class="btn-danger" onclick="deleteTodo(${t.id})">Delete</button>
+      </div>
+    `;
+    list.appendChild(li);
+  });
+
+  document.getElementById('tdTotal').textContent   = todos.length;
+  document.getElementById('tdPending').textContent = todos.filter(t => !t.done).length;
+  document.getElementById('tdDone').textContent    = todos.filter(t => t.done).length;
+}
+</script>
+</body>
+</html>
